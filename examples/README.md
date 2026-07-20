@@ -4,25 +4,15 @@
 
 ## 运行
 
-```powershell
-cjpm build
-Copy-Item ..\sdl\.sdl3\*.dll target\release\bin\   # 运行时需要 SDL3 动态库
-
+```shell
 cjpm run                          # 列出全部示例
-cjpm run -- line                  # 在交互窗口中打开某一个
-cjpm run -- interactive           # 手工装配交互组件的完整演示
-cjpm run -- --export gallery      # 把全部示例渲染为 gallery/<name>.png
+cjpm run --run-args="bubble"      # 查看气泡图示例
+cjpm run --run-args="interactive"           # 手工装配交互组件的完整演示
 ```
-
-`--export` 同时是本项目的回归检查：它会走一遍每一种图表类型和完整的导出链路，任何一张图坏掉
-都会变成一个坏掉的文件。
 
 每个窗口都带完整工具栏、悬停读数与光标状态条，因此任意示例都可以直接缩放、平移、保存。
 
 ## 画廊
-
-下表由 `cjpm run -- --export gallery` 生成的实际渲染结果构成；示例名即命令行参数
-（如 `cjpm run -- pie`）。
 
 | | | |
 |---|---|---|
