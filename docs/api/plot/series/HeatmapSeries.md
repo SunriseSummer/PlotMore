@@ -35,7 +35,7 @@ main(): Unit {
     let xr = Bounds(0.0, 7.0)
     let yr = Bounds(0.0, 7.0)
     // f 是最后一个形参，因此可用尾随 lambda 形式采样乘法表
-    let heat = HeatmapSeries.fromFunction(8, 8, xr, yr) { x, y => x * y }
+    let heat = HeatmapSeries.fromFunction(8, 8, xr, yr) {x, y => x * y}
     heat.map = Some(Colormap.magma())
     heat.showValues = true
 

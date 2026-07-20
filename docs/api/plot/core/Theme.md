@@ -4,7 +4,7 @@
 
 `plot.core` 中的 public class
 
-图形绘制所用的全部颜色、字号与粗细设置。主题刻意做成可变类而非不可变值：它是配置，常见姿势是取一个预设、只调整两三个字段（`palette`、`background`），而不是重述全部三十项。
+图形绘制所用的全部颜色、字号与粗细设置。主题刻意做成可变类而非不可变值：它是配置，常见做法是取一个预设、只调整两三个字段（`palette`、`background`），而不是重述全部三十项。
 
 ## 声明
 
@@ -26,14 +26,14 @@ import plot.core.Theme
 main(): Unit {
     // 从暗色预设出发
     let dark = Theme.dark()
-    println(dark.isDark)              // 输出: true
-    println(dark.palette.size())      // 输出: 8
+    println(dark.isDark) // 输出: true
+    println(dark.palette.size()) // 输出: 8
 
     // 派生副本，调整不会回写预设
     let custom = dark.copy()
     custom.panelBordered = false
-    println(dark.panelBordered)       // 输出: true
-    println(custom.panelBordered)     // 输出: false
+    println(dark.panelBordered) // 输出: true
+    println(custom.panelBordered) // 输出: false
 }
 ```
 

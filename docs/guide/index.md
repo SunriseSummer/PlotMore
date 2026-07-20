@@ -1,60 +1,80 @@
-# PlotMore Guide
+# Plot 使用指南
 
-`plot` 用仓颉代码描述图形，再把同一份图形显示在交互窗口或导出为图片。这套指南面向需要把业务数据变成折线、柱状、分布图或多面板报告的开发者。它不按源码包逐项讲类型，而是从“我要让读者看出什么关系”开始，带你完成第一张图、建立组合模型，再处理坐标、标注、分布分析和文件导出。
+Plot 是一套仓颉绘图库：程序先构建 `Figure`，再把同一个结果显示在桌面窗口或导出为 PNG。本指南面向需要把业务数据变成可解释图表的应用开发者，不按源码包罗列类型，而是从“我要让读者看出什么”出发，逐步覆盖首个结果、图形选择、坐标、分布与不确定性、二维场、非笛卡尔面板、交互、复用构建器和最终交付。
 
-## 这套指南怎么用
+## How to use this guide
 
-如果你从未使用过 `plot`，按“入门路径”顺序阅读；这条路径会延续同一组问题与概念。需要复用前页代码的操作指南会明确写出基页和插入点，独立操作指南则提供自己的完整程序。已经有图形代码的读者可以从“按任务查找”直接进入；遇到签名、默认值或完整成员列表时，跳到独立的 [API 参考](../api/index.md)。指南负责解释选择和流程，API 参考负责精确契约，两边不会维护两份成员目录。
+第一次使用时按学习路径顺序阅读；已有项目时从“按任务查找”直接进入。教程提供完整学习过程，独立 how-to 提供可运行程序，继承型 how-to 明确指出基页和替换位置，概念页解释选择依据，排错页按可观察症状诊断。每个内容页至少给出两段职责不同的仓颉代码，完整程序的自动验证结果记录在[验证报告](_verification.md)。
 
-示例假设仓颉 1.0.5 与 `cjpm` 可用。打开交互窗口还需要 SDL3 与 SDL3_ttf 动态库位于可执行文件目录或系统搜索路径；只做源码阅读不需要这些运行库。所有完整程序都可以复制到独立可执行项目，验证报告会区分“实际运行”和“只完成编译”。
+需要构造参数、字段、默认值、异常或完整成员清单时，跳到独立的 [Plot API 参考](../api/index.md)。指南回答“何时用、怎样完成、怎样确认”，API 参考回答“精确签名是什么”。两套文档互相链接，但不会维护两份成员目录。
 
-## 从这里开始
+示例假设 `cjpm 1.0.5` 可用。可见窗口与 PNG 导出都需要正确的 SDL 运行环境；GUI 完整程序会编译，但自动流程不会替你打开并关闭窗口。无窗口导出程序会实际运行，并检查退出码、标准输出和生成行为。
 
-先完成[绘制第一张折线图](getting-started/first-chart.md)。你会从空项目配置依赖，写出完整入口程序，打开一个带标题、图例和四个数据点的窗口。依赖和 SDL 运行库已就绪时大约需要 15–20 分钟；只需会写仓颉数组、导入和 `main`。该页不要求先认识 `plot.axes` 或 `plot.series` 的包结构；它只引入三个角色：整张图、一个坐标面板、一层数据。
+## Start here
 
-第一张图成功后，不要立即浏览几十个系列类型。先读[整张图、面板与数据系列](concepts/figure-axes-series.md)，理解谁负责组合、谁负责坐标、谁保存数据。这个模型会直接决定后面如何增加第二条线、如何做 2×2 报表，以及饼图为什么不使用笛卡尔坐标轴。
+开始前需要能够运行 `cjpm --version`，并让示例项目通过本地依赖找到 Plot；打开窗口或实际导出还需要 SDL 原生运行库可用。你只需具备仓颉数组、导入和函数的基础知识，不需要预先理解 Plot 的包结构或全部图表类型。
 
-## 学习路径
+先完成[打开第一张折线图](getting-started/first-chart.md)。该页从包声明、导入、数组、Figure、Series 一直写到 `PlotWindow.show()`，没有把 `main` 缩成“核心片段”。若环境已经配置好，十分钟内应看到带标题、坐标轴、圆点和图例的窗口；关闭窗口后命令正常返回。
 
-### 入门：从一条线到一份报告
+首图成功后阅读[Figure、面板与系列](concepts/figure-axes-series.md)。这一步把刚才的代码整理成三个稳定职责：Figure 管整体布局，面板管局部坐标，Series 保存并绘制数据。理解它以后，再增加第二条线、第二个面板或饼图时就不会把所有逻辑重新塞进 `main`。
 
-适合第一次使用者。依次完成[第一张折线图](getting-started/first-chart.md)、[组合模型](concepts/figure-axes-series.md)、[坐标范围与标度](concepts/data-domain-and-scales.md)，最后完成[多面板分析报告](tutorials/analysis-report.md)。结束时，你能把不同关系的数据放进合适面板，并知道何时让范围自动计算、何时显式固定。
+接着读[问题与视觉编码](concepts/chart-question-and-encoding.md)和[数据范围与标度](concepts/data-domain-and-scales.md)，先决定应该画什么，再决定值怎样进入坐标轴。随后完成[可复用交互仪表板](tutorials/advanced-dashboard.md)：它把构图代码提取为返回 Figure 的函数，同时加入四面板布局、连续色标、工具栏、悬停读数和光标状态。
 
-### 分析：从问题选择图形
+如果首图在构建或运行阶段失败，不要跳过环境问题继续复制更多代码；直接进入[构建与窗口运行排错](troubleshooting/build-and-runtime.md)。如果程序能运行但图为空、范围错误或文件异常，使用[数据、坐标与导出排错](troubleshooting/data-and-output.md)。
 
-适合已有数据、但不确定应该使用哪种图形的读者。先看[按数据关系选择图表](how-to/choose-chart.md)，再学习[比较分布](how-to/compare-distributions.md)和[配置坐标与对数轴](how-to/configure-axes.md)。这条路径的终点不是“知道全部图表名字”，而是能根据比较、趋势、组成、相关和分布等问题给出理由充分的选择。
+## Learning paths
 
-### 交付：从屏幕结果到可复现文件
+### 入门：从首个窗口到可复用仪表板
 
-适合报告、批处理和自动化任务。先读[样式、图例与输出](concepts/style-legend-and-output.md)，再完成[添加图例、参考线和说明](how-to/add-context.md)以及[导出 PNG](how-to/export-image.md)。你会明确图形描述与窗口生命周期的边界，并能在不打开查看窗口的情况下写出图片。
+依次阅读[第一张折线图](getting-started/first-chart.md) → [Figure、面板与系列](concepts/figure-axes-series.md) → [问题与视觉编码](concepts/chart-question-and-encoding.md) → [数据范围与标度](concepts/data-domain-and-scales.md) → [选择图表](how-to/choose-chart.md) → [进阶仪表板](tutorials/advanced-dashboard.md)。完成后，你能把不同问题放进合适面板，并让一个构建器同时服务窗口和导出。
 
-## 按任务查找
+### 分析：从区间、分布到二维场
 
-| 你的目标 | 从这里进入 | 完成后的可观察结果 |
+从[进阶仪表板](tutorials/advanced-dashboard.md)继续到[不确定性与分布](concepts/uncertainty-and-distribution.md)、[误差和置信带](how-to/show-uncertainty.md)、[两组分布](how-to/compare-distributions.md)、[二维场与色图](concepts/field-data-and-colormaps.md)、[热图和等高线](how-to/draw-field-data.md)、[非笛卡尔面板](concepts/non-cartesian-panels.md)和[饼图与雷达图](how-to/build-pie-and-radar.md)。这条路径强调统计含义、共同范围、色标和适用边界。
+
+### 交互与交付：从人工检查到稳定文件
+
+从[进阶仪表板](tutorials/advanced-dashboard.md)进入[交互与视图状态](concepts/interaction-and-view-state.md)、[启用窗口交互](how-to/interactive-window.md)、[样式、可读性与输出](concepts/style-accessibility-and-output.md)、[添加上下文](how-to/add-context.md)和[导出 PNG](how-to/export-image.md)。完成后，你能区分数据范围与用户视图，知道窗口组件为何不进入导出图片，并能实际核对最终文件。
+
+## Find by task
+
+下表不是目录缩写，而是按“可观察结果”选择入口。先找最接近当前目标的一行；完成后按页面的下一步继续，不必从头通读所有类型。
+
+| 目标 | 入口 | 完成后的结果 |
 |---|---|---|
-| 第一次安装并显示图形 | [绘制第一张折线图](getting-started/first-chart.md) | 打开带标题、图例和折线的窗口 |
-| 组合多条系列或多个面板 | [多面板分析报告](tutorials/analysis-report.md) | 一个窗口同时显示趋势和分类比较 |
-| 根据数据问题选择图表 | [按数据关系选择图表](how-to/choose-chart.md) | 能说明折线、柱状、散点或分布图为何合适 |
-| 固定范围、分类轴或对数轴 | [配置坐标与对数轴](how-to/configure-axes.md) | 坐标范围和刻度符合数据含义 |
-| 比较一组样本的分布 | [比较直方图、箱线图和小提琴图](how-to/compare-distributions.md) | 同一问题下选出合适的分布表达 |
-| 加图例、阈值线、区间和文字说明 | [给图形补充上下文](how-to/add-context.md) | 读者无需猜测系列和阈值含义 |
-| 在批处理任务中写出 PNG | [把图导出为 PNG](how-to/export-image.md) | 生成可打开的指定尺寸图片 |
-| 处理空数据、负对数值或看不见的标注 | [排查常见绘图问题](troubleshooting/common-problems.md) | 能从现象定位数据、标度或运行环境问题 |
+| 打开第一个 Plot 窗口 | [第一张折线图](getting-started/first-chart.md) | 窗口显示标题、坐标轴、折线和图例 |
+| 组合多种图形并复用构建代码 | [可复用交互仪表板](tutorials/advanced-dashboard.md) | 四面板窗口可缩放、悬停，并可改为导出 |
+| 按趋势、比较、关系或构成选择图形 | [按问题选择图表](how-to/choose-chart.md) | 为选择给出与读者问题一致的理由 |
+| 固定范围、设置类别轴或对数轴 | [配置坐标范围和标度](how-to/configure-axes.md) | 坐标边界和刻度符合数据语义 |
+| 比较分类组或显示总量构成 | [分组或堆叠柱形](how-to/group-and-stack-bars.md) | 一张图片并列展示 grouped 与 stacked |
+| 在散点中加入负载和请求量 | [颜色和大小编码](how-to/map-color-and-size.md) | 气泡图带可解释的连续色标 |
+| 显示点误差与连续区间 | [误差和置信带](how-to/show-uncertainty.md) | 一张图片区分误差棒和 95% 带 |
+| 比较两批原始样本 | [比较两组分布](how-to/compare-distributions.md) | 两组都进入直方图、箱线图和小提琴图 |
+| 显示二维标量场 | [绘制热图和等高线](how-to/draw-field-data.md) | 热图、等高线与 ColorBar 使用一致值域 |
+| 显示整体构成或多指标轮廓 | [构建饼图和雷达图](how-to/build-pie-and-radar.md) | 两种非笛卡尔面板加入同一 Figure |
+| 启用缩放、平移、复位和读数 | [启用窗口交互](how-to/interactive-window.md) | 首图获得标准工具栏、悬停和光标状态 |
+| 添加阈值、事件区间和文字 | [添加上下文](how-to/add-context.md) | 标注在数据坐标中跟随视图 |
+| 在批处理任务中生成图片 | [导出可交付 PNG](how-to/export-image.md) | 程序同步生成指定尺寸的 PNG |
+| 定位依赖、SDL 或窗口生命周期问题 | [构建与窗口运行排错](troubleshooting/build-and-runtime.md) | 用退出码、探针和可见窗口缩小故障范围 |
+| 定位空图、范围或文件异常 | [数据、坐标与导出排错](troubleshooting/data-and-output.md) | 从数据层、坐标层或文件层完成修复确认 |
 
-## 核心概念
+## Core concepts
 
-- [Figure、Panel/Axes 与 Series](concepts/figure-axes-series.md)：整张图安排面板，面板建立坐标语境，系列把数据画进语境。先理解这层关系，再学习具体图表。
-- [数据范围、标度与投影](concepts/data-domain-and-scales.md)：数据值如何变成轴上的位置；自动范围、显式范围、线性和对数标度分别解决什么问题。
-- [样式、图例与输出](concepts/style-legend-and-output.md)：数据语义、视觉表达和显示/导出生命周期如何分工，避免把主题设置、窗口和文件写出混成一件事。
+这八个概念组成一套从数据到交付的思维模型。前四个决定对象、图形、坐标和统计表达，后四个处理二维场、特殊面板、交互状态和最终可读性。概念页都提供对比或过程代码，但不替代任务页的完整程序。
 
-## API 参考
+- [Figure、面板与系列](concepts/figure-axes-series.md)：整图、局部面板和数据系列怎样分工。
+- [问题与视觉编码](concepts/chart-question-and-encoding.md)：为什么先明确比较关系，再选择位置、长度、颜色或形状。
+- [数据范围与标度](concepts/data-domain-and-scales.md)：自动范围、显式限制、Scale 与临时视图的区别。
+- [不确定性与分布](concepts/uncertainty-and-distribution.md)：中心值、误差、区间和完整样本形状各回答什么。
+- [二维场与色图](concepts/field-data-and-colormaps.md)：网格、值域、Colormap 与 ColorBar 如何保持一致。
+- [非笛卡尔面板](concepts/non-cartesian-panels.md)：饼图和雷达图为何是 Panel，以及它们的适用边界。
+- [交互与视图状态](concepts/interaction-and-view-state.md)：缩放和平移为何不修改原始数组。
+- [样式、可读性与输出](concepts/style-accessibility-and-output.md)：主题、图例、标注和尺寸如何共同支持复核。
 
-需要确认构造参数、字段、默认值、异常或全部系列类型时，使用 [plot API 参考](../api/index.md)。指南中的“相关 API”会直接链接到最窄的类型页；例如坐标配置会链接 [`Axes`](../api/plot/axes/Axes.md)，导出会链接 [`FigureExport`](../api/plot/FigureExport.md)。
+## API reference
 
-## 排查问题
+精确查询使用 [Plot API 参考](../api/index.md)。例如整图布局见 [`Figure`](../api/plot/Figure.md)，普通坐标见 [`Axes`](../api/plot/axes/Axes.md)，窗口生命周期见 [`PlotWindow`](../api/plot/PlotWindow.md)，文件输出见 [`FigureExport`](../api/plot/FigureExport.md)。指南页的“相关 API”会直接落到最窄的类型页，避免你在包索引中反复搜索。
 
-窗口未打开、图片未生成、系列空白、对数轴缺线或标注跑出画面时，从[常见绘图问题](troubleshooting/common-problems.md)按现象检查。该页把数据长度、空数据范围、对数域、文件路径和 SDL 运行库分开诊断，避免用“检查配置”一笔带过。
+## Troubleshooting
 
-## 文档验证
-
-示例编译/运行、任务覆盖、学习路径、源码声明与未自动运行项见[验证报告](_verification.md)。
+错误发生在编译、原生库加载、显示环境或 `show()` 生命周期时，从[构建与窗口运行排错](troubleshooting/build-and-runtime.md)开始。程序已经运行但结果空白、范围不对、对数轴失败或 PNG 异常时，从[数据、坐标与导出排错](troubleshooting/data-and-output.md)开始。两页都按三种症状分支组织，每个分支要求实际检查动作和可观察的修复确认，不使用“检查配置”一笔带过。

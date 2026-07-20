@@ -1,76 +1,58 @@
-[plot 指南](../index.md) › 组合模型
-
-# 整张图、面板与数据系列
+# Figure、面板与系列
 
 ## 先用一句话说明
 
-整张图安排一个或多个绘图区，每个绘图区建立自己的坐标语境，数据系列把一组数据画进其中。
+Figure 管整体布局，面板管坐标和局部显示，Series 把一组数据画进面板。
 
-这句话对应 `Figure`、`Panel`/`Axes` 和 `Series`，但先记住职责而不是类型名：作品、绘图区、数据层。它们的关系比任何单个图表类型更重要，因为几乎所有组合任务都只是改变“有多少绘图区”和“每个绘图区放哪些数据层”。
+这三个层次对应三个不同问题：整张图要放几块内容；某一块内容用什么坐标、标题和图例；一组数据具体画成折线、柱形还是散点。先分清职责，后续增加面板、替换图表或切换输出方式时就不用重写整个程序。
 
 ## 为什么重要
 
-第一张折线图只有一个面板和一层数据，三个角色看起来可以混在一起。增加第二条线时，如果误以为要新建整张图，会得到两个窗口而不是对比；做 2×2 报表时，如果把所有数据都加进同一 `Axes`，会让单位和尺度互相挤压。理解边界后，你能预先判断应该调用 `axes.add` 还是 `figure.addAxes`。
-
-这个模型还解释了为何饼图、雷达图和普通 x/y 图使用不同面板。它们都能被 `Figure` 排列，却没有共同的笛卡尔 x/y 标度；强行把饼图塞进 `Axes` 只会产生一堆“对它无意义”的轴属性。
+初学者常把“图”当成一个不可拆的对象，于是设置标题、范围、数据和窗口都挤在 `main` 中。程序稍大就会出现两个麻烦：一是同一份图不能同时用于窗口和导出；二是改一个面板时容易误改整张图。Plot 的结构允许你先构建纯 Figure，再交给 `PlotWindow` 或 `FigureExport`。面板还不只 `Axes`：饼图和雷达图也实现 Panel，它们没有普通的 x/y 坐标，却仍能参加 Figure 网格布局。
 
 ## 工作模型
 
-`Figure` 保存整张图的标题、副标题、主题和面板网格。它不持有窗口或 GPU 资源，因此同一个 `Figure` 可以先用于交互查看，再按另一尺寸导出。调用 `setGrid(rows, columns)` 决定面板槽位；随后 `addAxes`、`addPieAxes` 等依次加入面板。
+可以把对象关系看成一棵树。Figure 保存标题、主题、网格和有序面板；普通 Axes 保存 x/y 标度、坐标标签、图例、标注与一组 Series；每个 Series 保存数据和该图形自己的样式。绘制时 Figure 给每个面板分配矩形，面板再把数据通过标度映射到像素。窗口负责事件和显示，不拥有数据语义。
 
-`Panel` 表示一个自足绘图区。笛卡尔 `Axes` 在矩形区域中维护横纵标度、网格、图例和标注；`PieAxes` 处理扇区，`RadarAxes` 处理辐射坐标。面板知道自己上一次占据的画面范围，因此窗口交互可以判断指针属于哪个区域。
+下面对比“一个面板叠加两组数据”和“两个面板分别显示”。前者适合共享单位并需要直接比较的系列；后者适合单位、范围或问题不同的内容。
 
-`Series` 保存数据以及这一层的视觉表达。折线、柱状、散点、直方图都实现系列抽象，并由所属面板决定坐标投影。同一 `Axes` 中的系列共享标度，所以它们适合直接比较；单位或数据含义完全不同的系列通常应进入不同面板。
+```cangjie role=contrast
+let (figure, axes) = Figure.single(title: "共享坐标")
+axes.add(LineSeries(xs, actual, label: "实际"))
+axes.add(LineSeries(xs, target, label: "目标"))
+```
 
-数据流可以概括为：`Figure` 分配面板矩形 → 面板根据系列数据确定域和坐标投影 → 每个系列在同一投影中绘制 → 图例与标注补充语境 → 窗口显示或导出捕获最终结果。
+```cangjie role=trace
+let figure = Figure("独立面板")
+figure.setGrid(1, 2)
+let traffic = figure.addAxes()
+traffic.add(LineSeries(hours, requests, label: "请求量"))
+let latency = figure.addAxes()
+latency.add(LineSeries(hours, milliseconds, label: "延迟"))
+```
 
 ## 选择与取舍
 
-- **再加一条系列**：数据共享相同横纵语义和单位，希望读者直接比较。调用同一个 `axes.add`。
-- **再加一个面板**：单位、标度或分析问题不同，或信息在一处会过密。设置网格并调用 `figure.addAxes`。
-- **换一种面板**：数据不是笛卡尔关系，例如组成比例或多维雷达轮廓。选择 `PieAxes`/`RadarAxes`，不要把轴属性当通用能力。
-- **新建另一张 Figure**：两个结果有不同标题、主题、文件或窗口生命周期，且不需要在同一画面阅读。
+当系列共享相同的横轴含义和相近的纵轴单位时，放在一个 Axes 中可直接比较；如果单位不同，强行叠加会让一组曲线被压扁，也会让读者误以为共用刻度。此时应拆成面板。面板太多也会稀释重点：先按问题分组，再决定网格，不要为了展示 API 而堆满图形。
 
-面板越多并不越专业。每个面板都增加标题、刻度和眼球跳转成本；如果两条系列能在同一单位下清楚比较，共享面板通常更直接。反过来，把请求量和百分比放在同一纵轴会造成错误暗示，即使技术上可以绘制。
+构建函数返回 Figure 是推荐边界。它能接收业务数据并完成标题、面板和系列设置，但不应在内部打开窗口。窗口配置属于交付方式，文件名和图片尺寸也属于调用端。这样同一构建器可被 GUI、命令行报告和测试使用。
 
 ## 应用这个模型
 
-第一张图中 `Figure.single` 等价于“创建 `Figure`，加入一个 `Axes`，再同时返回二者”。下面的对照片段只增加数据层：两条系列进入同一个 `axes`，因此共享横纵语义。
+阅读一段 Plot 代码时，先圈出 Figure 的创建和 `setGrid`，再按 `addAxes`/`addPanel` 顺序列出面板，最后看每个面板收到哪些系列。排查空图时也按相反顺序检查：Figure 是否有面板，面板是否收到系列，系列是否有有效数据。为已有图增加第二条曲线，只改系列层；为报告增加一个独立指标，才改面板和网格层；要在桌面与 PNG 间切换，只改 Figure 之后的交付层。
 
-```cangjie role=contrast
-axes.add(LineSeries(months, northSales, label: "华北"))
-axes.add(LineSeries(months, southSales, label: "华南"))
-```
-
-而要把“月销量”与“渠道销量”放在同一报告，应让 `Figure` 使用两个面板。下面按调用顺序追踪职责变化：`Figure` 先分配槽位，每次 `addAxes` 再返回一个独立坐标语境，系列只加入对应面板。
-
-```cangjie role=trace
-let figure = Figure("销售总览")
-figure.setGrid(1, 2)
-let trendAxes = figure.addAxes()
-trendAxes.add(LineSeries(months, northSales, label: "华北"))
-let channelAxes = figure.addAxes()
-channelAxes.add(BarSeries(channelSales, label: "渠道销量"))
-```
-
-两个面板共享总标题和主题，但各自解释自己的数据。这里的重点不是复制成完整程序，而是沿数据流看出“再加系列”与“再加面板”的分界。
-
-后面的[多面板分析报告](../tutorials/analysis-report.md)会把这套模型写成完整程序。阅读代码时，可逐行标注“整张图设置”“面板设置”“系列设置”；如果某个选项找不到归属，先问它影响整个作品、一个绘图区，还是一层数据。
+该模型是后续[问题与视觉编码](chart-question-and-encoding.md)的前提：先知道对象放在哪里，才谈选择哪种系列。完整构建可回到[第一张折线图](../getting-started/first-chart.md)逐行对应。
 
 ## 常见误解
 
-- **“Axes 就是两条轴线。”** 在本库中它是完整的笛卡尔绘图区，包含系列、标度、网格、图例和标注。
-- **“Series 自己决定屏幕坐标。”** 系列提供数据和绘制方式，面板的标度与投影决定数据值落到哪里。
-- **“窗口就是图。”** `PlotWindow` 消费 `Figure`；`Figure` 本身可以在没有可见窗口时导出。
-- **“每种图表都需要一张新 Figure。”** 多种系列可以共享 `Axes`，多个面板也可以共享 `Figure`。
+“Axes 就是整张图”不准确，一张 Figure 可以有多个 Axes，也可以混入 PieAxes 或 RadarAxes。“Series 自己决定坐标范围”也只对了一半：系列报告数据范围，Axes 合并可见系列后再决定有效范围。“窗口关闭会删除 Figure”同样不是设计模型；窗口只是使用 Figure 的一种方式。最后，`add` 返回值不代表复制了系列，通常仍是同一个对象，因此应在加入前后有意识地完成样式设置。
 
 ## 相关 API
 
-- [`Figure`](../../api/plot/Figure.md) — 总标题、主题、网格和面板组合。
-- [`Panel`](../../api/plot/axes/Panel.md) — 所有绘图区的共同抽象。
-- [`Axes`](../../api/plot/axes/Axes.md) — 笛卡尔坐标、系列、图例和标注。
-- [`LineSeries`](../../api/plot/series/LineSeries.md) — 一个具体数据层示例。
+- [`Figure`](../../api/plot/Figure.md)：整图、网格和面板集合。
+- [`Axes`](../../api/plot/axes/Axes.md)：普通二维坐标面板。
+- [`Series`](../../api/plot/series/Series.md)：所有普通数据系列的共同接口。
 
 ## 下一步
 
-接着学习[数据范围、标度与投影](data-domain-and-scales.md)，理解同一数据层如何变成线性、分类或对数位置。随后在[多面板分析报告](../tutorials/analysis-report.md)中把两个面板组合成完整结果。
+阅读[问题与视觉编码](chart-question-and-encoding.md)，把“数据画在哪里”推进到“数据应该怎样表达”。

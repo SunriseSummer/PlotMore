@@ -36,7 +36,7 @@ main(): Unit {
 
     let trial = ErrorBarSeries(dose, response, label: "试验 A")
     trial.setYError(sem)
-    trial.connect = true    // 除标记外再连线
+    trial.connect = true // 除标记外再连线
     trial.capSize = 5.0
 
     let (figure, axes) = Figure.single(title: "剂量反应")

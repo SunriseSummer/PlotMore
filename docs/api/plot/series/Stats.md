@@ -135,7 +135,7 @@ public static func standardDeviation(values: Array<Float64>): ?Float64
 
 ### box
 
-`values` 的箱线摘要。须伸至距四分位数 `whiskerRange` 倍四分位距以内最远的样本（Tukey 规则，惯例 1.5），更远的样本报告为离群点；须端落在真实数据点上而非围栏上。全部样本都在围栏外时，两须收拢到中位数。
+`values` 的箱线摘要。箱须延伸到距四分位数 `whiskerRange` 倍四分位距以内最远的样本（Tukey 规则，惯例 1.5），更远的样本报告为离群点；箱须端点落在真实数据点上而非围栏上。全部样本都在围栏外时，两侧箱须收拢到中位数。
 
 ```cangjie
 public static func box(values: Array<Float64>, whiskerRange!: Float64 = 1.5): BoxStats

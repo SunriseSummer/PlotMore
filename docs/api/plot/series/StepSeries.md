@@ -4,7 +4,7 @@
 
 `plot.series` 中的 public class
 
-分段常值的折线，忠实呈现在采样点之间保持数值而非滑动过渡的量：计数器、离散状态、区间内固定的速率。改变水平值的位置由 [StepWhere](StepWhere.md) 约定；非有限的点与坐标轴无法表达的点把台阶断成独立的段，缺口保持为缺口。
+分段常值的折线，用来表示在采样点之间保持不变、不会平滑过渡的量，例如计数器、离散状态和区间内固定的速率。改变水平值的位置由 [StepWhere](StepWhere.md) 约定；非有限的点与坐标轴无法表达的点把台阶断成独立的段，缺口保持为缺口。
 
 ## 声明
 
@@ -30,7 +30,7 @@ main(): Unit {
     let done = [0.0, 3.0, 3.0, 7.0, 9.0]
     let progress = StepSeries(minutes, done, label: "完成任务数")
     progress.changeAt = StepWhere.Post
-    progress.fillTo = Some(0.0)   // 台阶下方填充到基线 0
+    progress.fillTo = Some(0.0) // 台阶下方填充到基线 0
 
     let (figure, axes) = Figure.single(title: "完成任务数")
     axes.add(progress)

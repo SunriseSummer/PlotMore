@@ -38,8 +38,8 @@ main(): Unit {
     visits.fillOpacity = 0.35
 
     // 形态二：两条边界之间的条带（如预测区间）
-    let forecast = AreaSeries.between(days, [100.0, 150.0, 130.0, 180.0, 160.0],
-        [140.0, 210.0, 175.0, 240.0, 220.0], label: "预测区间")
+    let forecast = AreaSeries.between(days, [100.0, 150.0, 130.0, 180.0, 160.0], [140.0, 210.0, 175.0, 240.0, 220.0],
+        label: "预测区间")
 
     let (figure, axes) = Figure.single(title: "访问量")
     axes.add(forecast)

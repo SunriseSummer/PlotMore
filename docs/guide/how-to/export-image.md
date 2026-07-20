@@ -1,95 +1,69 @@
-[plot 指南](../index.md) › 导出 PNG
-
-# 把图导出为 PNG
+# 导出可交付 PNG
 
 ## 目标
 
-在不打开可见查看窗口的情况下，把完整 `Figure` 写入 `monthly-sales.png`，并区分传入的逻辑布局尺寸与最终 PNG 的物理像素尺寸。当前渲染器默认请求每轴 2 倍超采样；只有超采样目标可用时才会按该倍率捕获，程序返回后应读取 PNG 实际尺寸再检查或移动。
+把一个由独立构建函数返回的 Figure 导出为指定逻辑尺寸的 PNG，并通过终端输出和实际文件完成验证。程序不打开可见窗口，适合命令行、自动报告和 CI 环境。
 
 ## 适用场景
 
-当输出的主要消费者是文档、邮件、网页或归档系统，而不是正在探索数据的人时使用。人工缩放、平移和悬停读数属于 `PlotWindow`；直接导出省去等待用户关闭窗口的事件循环。两条路径都复用同一个图形描述。
+当结果要嵌入网页、报告、工单或测试产物时使用。需要人工缩放和读取数据时，使用[交互窗口](interactive-window.md)。构图逻辑应放在返回 Figure 的函数中，让显示与导出共享同一事实来源。
 
 ## 准备工作
 
-项目已经可以构建 `plot`，运行环境能加载 SDL 动态库，目标目录可写。选择明确的像素尺寸和文件名；批量任务为每个结果使用不同路径。若目标目录不存在，应在业务层先创建或报告错误，不要把路径准备藏在图形构建函数中。
+确定输出目录可写、文件名以 `.png` 结束，并根据最终载体选择宽高。下面输出到当前工作目录；在服务程序中应使用明确的绝对或配置路径。导出依赖 SDL 的隐藏渲染环境，但不会显示桌面窗口。
 
 ## 操作步骤
 
-### 1. 构建与窗口无关的 Figure
+完整程序构建一张带目标线的折线图，再以 1200×720 逻辑尺寸导出。`renderToPng` 是同步调用，返回后才能安全上传、移动或覆盖文件。
 
-沿用第一张图的 `Figure.single` 和 `LineSeries`。不要先创建 `PlotWindow`；`FigureExport.renderToPng` 会自行建立隐藏渲染环境，并在完成后释放它。
-
-### 2. 指定文件和尺寸
-
-调用 `renderToPng(figure, path, width, height)`。宽高必须是正的**逻辑尺寸**。`width`/`height` 是逻辑尺寸；当默认的 2 倍超采样目标可用时，物理像素每轴翻倍，实际文件尺寸仍以 IHDR 为准。本次验证环境实测传入 600×400 落盘为 1200×800；若渲染器回退到直接绘制，则可能得到 600×400。逻辑尺寸影响布局，超采样可用时会提高文字和线条的物理像素密度。
-
-### 3. 等待调用返回再使用文件
-
-导出是同步任务。调用返回后再上传、移动或覆盖文件。失败时保留错误信息并处理目标路径，不要把失败吞掉后继续声称报告已生成。
-
-## 完整程序
-
-```cangjie verify role=complete
-package demo
+```cangjie verify role=complete profile=gui-visual
+package guide_examples
 
 import plot.{Figure, FigureExport}
 import plot.series.LineSeries
 
-main(): Unit {
-    let (figure, axes) = Figure.single(title: "月度销量")
-    axes.xLabel = "月份"
-    axes.yLabel = "销量"
-    axes.add(LineSeries([1.0, 2.0, 3.0, 4.0], [12.0, 18.0, 15.0, 22.0], label: "华东"))
-    FigureExport.renderToPng(
-        figure,
-        "monthly-sales.png",
-        width: 600,
-        height: 400
-    )
-    println("已写入 monthly-sales.png")
+func buildReport(): Figure {
+    let (figure, axes) = Figure.single(title: "每周订单")
+    axes.xLabel = "周"
+    axes.yLabel = "订单数"
+    axes.add(LineSeries([1.0, 2.0, 3.0, 4.0, 5.0], [320.0, 365.0, 351.0, 418.0, 447.0], label: "实际"))
+    axes.add(LineSeries([1.0, 2.0, 3.0, 4.0, 5.0], [330.0, 350.0, 370.0, 390.0, 410.0], label: "目标"))
+    figure
 }
+
+main(): Unit {
+    let path = "weekly-orders.png"
+    FigureExport.renderToPng(buildReport(), path, width: 1200, height: 720)
+    println("已写入 ${path}") // 输出: 已写入 weekly-orders.png
+}
+```
+
+同一个构建器也可用于桌面预览。下面变化用 PlotWindow 接收 `buildReport()`，加入标准工具栏，允许人工检查后从窗口保存；它改变交付方式，不是重复导出代码。
+
+```cangjie role=variation
+import plot.{PlotWindow, WindowOptions}
+
+let window = PlotWindow(
+    buildReport(),
+    options: WindowOptions(title: "每周订单预览", width: 1000, height: 640)
+)
+window.addStandardToolbar()
+window.exportFileName = "weekly-orders-reviewed.png"
+window.show()
 ```
 
 ## 确认结果
 
-执行 `cjpm run`。终端应打印文件名，当前目录出现非空的 `monthly-sales.png`。用图片查看器打开它，确认总标题、轴标签、折线和图例与 `Figure` 描述一致。本次验证环境中，请求的逻辑尺寸 600×400 实测得到物理像素 1200×800；你的运行环境应以 PNG 的 IHDR 为准。Windows 可这样读取：
-
-```powershell
-$bytes = [System.IO.File]::ReadAllBytes("monthly-sales.png")
-$width = [System.Net.IPAddress]::NetworkToHostOrder([BitConverter]::ToInt32($bytes, 16))
-$height = [System.Net.IPAddress]::NetworkToHostOrder([BitConverter]::ToInt32($bytes, 20))
-"${width}x${height}"
-```
-
-本次验证记录为 `1200x800`。若你的输出是 `600x400`，说明渲染器使用了直接绘制回退，并不表示编码器改变了纵横比。自动化任务至少检查文件存在、非空和 IHDR 实测尺寸；只有固定了运行环境后，才把具体物理尺寸写成回归断言。视觉回归可再比较确定性示例的截图。
-
-需要横向报告时，不必重建数据。把下面变化插入完整程序的 `println` 之前；它复用同一个 `figure`，额外写出逻辑尺寸 900×300 的横向版本：
-
-```cangjie role=variation
-FigureExport.renderToPng(
-    figure,
-    "monthly-sales-wide.png",
-    width: 900,
-    height: 300
-)
-```
+运行完整程序后，终端应打印“已写入 weekly-orders.png”，当前目录存在可打开的 PNG。检查图片约为 1200×720、标题与两条图例完整、坐标标签没有裁切、折线颜色在背景上可辨。默认渲染可能采用超采样，实际物理像素应以 PNG 文件头为准；交付方要求严格尺寸时必须实际检查文件，不要只凭参数猜测。
 
 ## 常见错误
 
-- **尺寸为零或负数**：导出会报告尺寸错误；在调用前校验配置。
-- **路径不可写或目录不存在**：先创建目录并检查权限，不要把错误解释为编码问题。
-- **编译成功、运行时报 SDL 动态库缺失**：隐藏渲染仍需要运行库；“不显示窗口”不等于完全不使用 SDL。
-- **循环覆盖同一路径**：为每个数据集生成稳定且唯一的文件名，调用返回后再进入下一项。
-- **导出与窗口外观不同**：检查导出尺寸、窗口附加组件和主题；工具栏等窗口界面不属于图本身。
-- **图片宽高翻倍或没有翻倍**：`width`/`height` 是逻辑尺寸。默认超采样目标可用时通常每轴 2 倍，不可用时渲染器会回退到直接绘制；读取 IHDR 确认当前环境的实际倍率，不要把 2 倍当成跨环境契约。
+相对路径写入了意外工作目录、父目录不存在、扩展名错误或目标没有写权限，都会导致文件缺失。导出是同步任务，返回前不要启动并发上传。窗口工具栏不会进入图片，因为它不是 Figure 内容。若隐藏渲染环境初始化失败，按[构建与运行排错](../troubleshooting/build-and-runtime.md)检查 SDL；若文件存在但内容空白，按[数据与输出排错](../troubleshooting/data-and-output.md)检查范围和系列。
 
 ## 相关 API
 
-- [`FigureExport`](../../api/plot/FigureExport.md) — PNG/BMP 路径、尺寸要求和错误行为。
-- [`Figure`](../../api/plot/Figure.md) — 可被显示或导出的完整图形描述。
-- [`PlotWindow`](../../api/plot/PlotWindow.md) — 需要人工交互时的替代交付路径。
+- [`FigureExport`](../../api/plot/FigureExport.md)：建立隐藏渲染环境并写入 PNG。
 
 ## 下一步
 
-为图补充阈值和说明时返回[给图形补充上下文](add-context.md)。批量导出失败时转到[常见绘图问题](../troubleshooting/common-problems.md)，按尺寸、路径、动态库和数据四类现象诊断。
+若导出或运行不符合预期，进入[构建与运行排错](../troubleshooting/build-and-runtime.md)，按可观察症状逐步定位。

@@ -26,17 +26,17 @@ import plot.core.Colors
 main(): Unit {
     // 解析十六进制字面量（前导 # 可省略，大小写不敏感）
     let brand = Colors.hex("#3B82F6")
-    println("${brand.r} ${brand.g} ${brand.b}")     // 输出: 59 130 246
+    println("${brand.r} ${brand.g} ${brand.b}") // 输出: 59 130 246
 
     // 由 HSL 生成：色相按度数回绕，饱和度与亮度夹取到 0..1
     let red = Colors.hsl(0.0, 1.0, 0.5)
-    println("${red.r} ${red.g} ${red.b}")           // 输出: 255 0 0
+    println("${red.r} ${red.g} ${red.b}") // 输出: 255 0 0
 
     // 不透明度取 0..1 而非字节值
-    println(Colors.fade(brand, 0.5).a)              // 输出: 128
+    println(Colors.fade(brand, 0.5).a) // 输出: 128
 
     // 深色背景上自动选出白色文字
-    println(Colors.contrastText(Colors.hex("#111827")).r)   // 输出: 255
+    println(Colors.contrastText(Colors.hex("#111827")).r) // 输出: 255
 }
 ```
 

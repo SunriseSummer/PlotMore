@@ -27,17 +27,17 @@ import plot.core.NumberFormat
 
 main(): Unit {
     // 刻度标签：小数位数由步长决定
-    println(NumberFormat.tick(1.5, 0.5))       // 输出: 1.5
-    println(NumberFormat.tick(2.0, 0.5))       // 输出: 2
-    println(NumberFormat.decimalsFor(0.05))    // 输出: 2
+    println(NumberFormat.tick(1.5, 0.5)) // 输出: 1.5
+    println(NumberFormat.tick(2.0, 0.5)) // 输出: 2
+    println(NumberFormat.decimalsFor(0.05)) // 输出: 2
 
     // 紧凑标签、固定位数与百分比
-    println(NumberFormat.compact(3.14159))     // 输出: 3.142
-    println(NumberFormat.fixed(1.239, 2))      // 输出: 1.24
-    println(NumberFormat.percent(0.42))        // 输出: 42%
+    println(NumberFormat.compact(3.14159)) // 输出: 3.142
+    println(NumberFormat.fixed(1.239, 2)) // 输出: 1.24
+    println(NumberFormat.percent(0.42)) // 输出: 42%
 
     // 对数轴的 10 的幂标签
-    println(NumberFormat.power10(3))           // 输出: 10^3
+    println(NumberFormat.power10(3)) // 输出: 10^3
 }
 ```
 

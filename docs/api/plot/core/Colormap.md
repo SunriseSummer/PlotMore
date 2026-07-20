@@ -28,16 +28,16 @@ main(): Unit {
 
     // t 被夹取到 0..1：越界一律取端点色
     let low = map.sample(-1.0)
-    println("${low.r} ${low.g} ${low.b}")      // 输出: 68 1 84
+    println("${low.r} ${low.g} ${low.b}") // 输出: 68 1 84
     let high = map.sample(2.0)
-    println("${high.r} ${high.g} ${high.b}")   // 输出: 253 231 37
+    println("${high.r} ${high.g} ${high.b}") // 输出: 253 231 37
 
     // 把数据值放进定义域取色；退化定义域一律取中点色
     let mid = map.sampleIn(150.0, Bounds(100.0, 200.0))
-    println(mid.r == map.sample(0.5).r)        // 输出: true
+    println(mid.r == map.sample(0.5).r) // 输出: true
 
     // 为图例取 5 个等距样本
-    println(map.ramp(5).size)                  // 输出: 5
+    println(map.ramp(5).size) // 输出: 5
 }
 ```
 

@@ -1,76 +1,67 @@
-[plot 指南](../index.md) › 选择图表
-
-# 按数据关系选择图表
+# 按问题选择图表
 
 ## 目标
 
-在写系列构造代码之前，先根据读者要比较的关系选择图表。完成这套步骤后，你应能用一句话说明选择理由，例如“观察连续时间趋势，所以使用折线”，而不是“因为折线看起来顺眼”。
+在动手调用 API 前，把“我要画什么”改写成读者真正要回答的问题，并选择最直接的 Plot 系列或面板。完成本页后，你应能为趋势、类别比较、关系、分布、构成和二维场各选出首选图形，也知道何时应拆成多个面板。
 
 ## 适用场景
 
-当你已经有整理好的数据，却在折线、柱状、散点、面积、饼图或分布图之间犹豫时使用。若问题是坐标范围或对数显示，而不是图表类型，请转到[配置坐标](configure-axes.md)。若还不理解系列如何进入面板，先读[组合模型](../concepts/figure-axes-series.md)。
+适用于已有数据、但还没有确定图表类型的阶段。若只是要修改已选图形的范围，请读[配置坐标轴](configure-axes.md)；若要理解选择原则，先读[问题与视觉编码](../concepts/chart-question-and-encoding.md)。本页的补丁建立在[第一张折线图](../getting-started/first-chart.md)上。
 
 ## 准备工作
 
-写下三个事实：每个观测代表什么、读者要判断什么、横向变量是连续数值还是离散类别。再检查样本量、缺失值和单位。图表无法弥补数据语义不清；类别数组与数值顺序错位时，代码仍可能正常运行却表达错误。
+写下四项：每个观测代表什么、主要比较是什么、变量是连续还是类别、读者需要大致模式还是精确值。然后用这张简表：随顺序变化选折线或阶梯；类别大小选柱形；两个连续变量关系选散点；样本形状选直方图/箱线图/小提琴图；连续区间选面积带；二维网格选热图/等高线；少量整体构成才选饼图；已归一化的多指标轮廓才选雷达图。
 
 ## 操作步骤
 
-### 1. 先写问题，再看类型
-
-- **随连续位置或时间变化**：使用 [`LineSeries`](../../api/plot/series/LineSeries.md)。点的顺序有意义，线段表示相邻观测之间的连续关系。
-- **比较离散类别大小**：使用 [`BarSeries`](../../api/plot/series/BarSeries.md) 和分类标度。类别之间没有数值距离，不要用折线暗示连续过渡。
-- **观察两个数值变量的相关或聚类**：使用 [`ScatterSeries`](../../api/plot/series/ScatterSeries.md)。如果点的大小还编码第三个量，再考虑气泡表达。
-- **强调累计量或范围**：使用面积系列或区间带。填充会强化“量”，不适合仅为装饰覆盖多条线。
-- **比较样本分布**：根据是否需要形状、分位数或原始频数，在直方图、箱线图和小提琴图中选择，详见[比较分布](compare-distributions.md)。
-- **展示整体中的少量组成**：饼/环图只适合类别少、总和明确的比例；需要精确比较时，排序柱状图通常更清楚。
-
-### 2. 决定是否共享面板
-
-单位和坐标语义相同的系列可以共享 `Axes`，便于直接比较。单位不同、标度不同或问题不同的数据应放到独立面板。不要为了减少页面数量，把百分比、金额和计数压在同一纵轴。
-
-### 3. 用最小样例验证选择
-
-先只画一到两组数据，检查读者能否在没有长说明的情况下回答原问题。若必须依赖颜色猜含义，补标签和图例；若主要差异被尺度压扁，检查范围或标度，而不是立刻换成更花哨的系列。
-
-本页继承[第一张图](../getting-started/first-chart.md)的完整程序。先保留其导入、`PlotWindow` 和 `window.show()`；在 `main` 中，用下面片段替换从 `Figure.single(...)` 到第一条 `axes.add(...)` 的四行。变量仍叫 `figure`、`axes`，因此基页后面的窗口代码无需修改。连续周次的次序和距离有意义，所以保留折线：
+下面把首图从“连续周次趋势”改成“四个无序渠道的转化率比较”。这是对首图 `main` 中构图部分的精确替换；同时补上 `CategoryScale` 和 `BarSeries` 导入。类别没有连续插值含义，所以不再用折线。
 
 ```cangjie role=patch
-let (figure, axes) = Figure.single(title: "四周销量")
-axes.xLabel = "周次"
-axes.yLabel = "件"
-axes.add(LineSeries([1.0, 2.0, 3.0, 4.0], [120.0, 146.0, 138.0, 171.0], label: "销量"))
+import plot.core.CategoryScale
+import plot.series.BarSeries
+
+let (figure, axes) = Figure.single(title: "渠道转化率")
+axes.xLabel = "渠道"
+axes.yLabel = "转化率 (%)"
+axes.setXScale(CategoryScale(["搜索", "推荐", "直接", "活动"]))
+axes.showGridX = false
+let bars = BarSeries([4.8, 6.2, 5.1, 7.4], label: "转化率")
+bars.showValues = true
+bars.valueDecimals = Some(1)
+axes.add(bars)
+let window = PlotWindow(figure, options: WindowOptions(title: "渠道转化率", width: 960, height: 640))
+window.show()
 ```
 
-若另一个地区也使用相同周次和单位，就不应另开面板。把下面变化插在刚才的 `axes.add(...)` 之后、基页创建窗口之前；两条线共享坐标，可直接比较：
+如果问题变成“延迟是否随负载上升”，观测单位是服务实例，两个变量都连续，应换成散点而不是柱形。下面是不同问题的变化，不是同一补丁换颜色。
 
 ```cangjie role=variation
-axes.add(LineSeries(
-    [1.0, 2.0, 3.0, 4.0],
-    [112.0, 139.0, 151.0, 166.0],
-    label: "华南"
-))
+import plot.series.ScatterSeries
+
+let (figure, axes) = Figure.single(title: "负载与延迟")
+axes.xLabel = "负载 (%)"
+axes.yLabel = "p95 延迟 (ms)"
+let points = ScatterSeries(
+    [22.0, 35.0, 48.0, 64.0, 79.0, 91.0],
+    [48.0, 55.0, 67.0, 83.0, 118.0, 176.0],
+    label: "服务实例"
+)
+axes.add(points)
 ```
 
 ## 确认结果
 
-让另一位读者只看标题、轴标签、图例和图形，回答你最初写下的问题。若他能说出趋势、类别高低、相关方向或分布差异，并且没有把单位或类别顺序理解错，选择才算成立。将选择理由写进代码旁的业务注释或报告说明，而不是记录“使用了某类”。
+运行柱形补丁后，应看到四个类别名称和四根从共同基线出发的柱，不能出现连接类别的折线。转化率最大的是“活动”，读者无需查数组即可判断。换成散点变化后，应看到点云从左下向右上延伸，横轴不再显示类别名称。若图形虽能运行却无法直接回答你写下的问题，就回到准备工作重新选择，而不是继续添加样式掩盖问题。
 
 ## 常见错误
 
-- 把离散月份名称当连续数值，却没有分类标签，读者只能看到 1、2、3。
-- 用折线连接无顺序类别，制造不存在的过渡关系。
-- 用饼图比较十几个接近比例，角度差难以识别。
-- 用面积填充多条交叉曲线，遮挡比强调更多。
-- 看到小值挤在底部就改对数轴，却没有处理零和负值。
-- 一张图回答多个互不相关的问题，最后只能靠说明文字解释。
+无序类别用折线会暗示中间过程；相近占比用饼图会让角度难比较；不同单位直接做雷达图会让轮廓受量纲支配；直方图和柱形图外观相似，但前者对连续样本分箱，后者比较明确类别。另一个常见错误是把“图要好看”当作问题，导致颜色和形状不断增加，却没有一句可验证结论。
 
 ## 相关 API
 
-- [`LineSeries`](../../api/plot/series/LineSeries.md)、[`BarSeries`](../../api/plot/series/BarSeries.md)、[`ScatterSeries`](../../api/plot/series/ScatterSeries.md) — 三类常见关系。
-- [`HistogramSeries`](../../api/plot/series/HistogramSeries.md)、[`BoxPlotSeries`](../../api/plot/series/BoxPlotSeries.md)、[`ViolinSeries`](../../api/plot/series/ViolinSeries.md) — 分布表达。
-- [`PieAxes`](../../api/plot/axes/PieAxes.md) — 非笛卡尔组成面板。
+- [系列总览](../../api/plot/series/index.md)：折线、柱形、散点、分布和场数据系列。
+- [面板总览](../../api/plot/axes/index.md)：普通、饼图和雷达图面板。
 
 ## 下一步
 
-若选择了分布图，继续[比较直方图、箱线图和小提琴图](compare-distributions.md)；选择了线性或分类图后，在[配置坐标](configure-axes.md)中确认范围与标度不会改变问题含义。
+把选择应用到一张综合结果中，继续[构建可复用的交互仪表板](../tutorials/advanced-dashboard.md)。

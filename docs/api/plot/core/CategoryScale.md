@@ -25,16 +25,16 @@ import plot.core.CategoryScale
 
 main(): Unit {
     let months = CategoryScale(["一月", "二月", "三月", "四月"])
-    println(months.count())          // 输出: 4
-    println(months.domain())         // 输出: Bounds(-0.500000, 3.500000)
-    println(months.bandWidth())      // 输出: 0.250000
+    println(months.count()) // 输出: 4
+    println(months.domain()) // 输出: Bounds(-0.500000, 3.500000)
+    println(months.bandWidth()) // 输出: 0.250000
 
     // 类别 1 位于其类别带的中心
-    println(months.normalize(1.0))   // 输出: 0.375000
+    println(months.normalize(1.0)) // 输出: 0.375000
 
     // 每个类别一个以类别名为标签的主刻度
     let ticks = months.ticks()
-    println(ticks[2].label)          // 输出: 三月
+    println(ticks[2].label) // 输出: 三月
 }
 ```
 

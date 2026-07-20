@@ -39,8 +39,8 @@ main(): Unit {
     let window = PlotWindow(figure)
     let _ = window.addStandardToolbar() // 保存 / 平移 / 框选缩放 / 复位 / 网格 / 主题
     let _ = window.enableHoverReadout() // 十字光标 + 吸附最近数据点的数值气泡
-    window.interactions.lockY = true    // 缩放与平移锁定在横轴——时间序列的常用设置
-    window.show()                       // 阻塞直至用户关闭窗口
+    window.interactions.lockY = true // 缩放与平移锁定在横轴——时间序列的常用设置
+    window.show() // 阻塞直至用户关闭窗口
 }
 ```
 

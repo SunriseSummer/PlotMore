@@ -39,7 +39,7 @@ main(): Unit {
     let reference = ScatterSeries(days, [3.0, 3.9, 4.0, 4.4], label: "参考")
 
     measured.setColor(Colors.hex("#D97706")) // 固定颜色，覆盖调色板
-    reference.opacity = 0.6                  // 在解析出的颜色之上再乘不透明度
+    reference.opacity = 0.6 // 在解析出的颜色之上再乘不透明度
 
     let (figure, axes) = Figure.single(title: "实测与参考")
     axes.add(measured) // Axes 依次为系列分配调色板槽位

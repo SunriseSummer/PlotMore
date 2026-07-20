@@ -31,13 +31,15 @@ import plot.{Figure, FigureExport}
 import plot.axes.{PieAxes, PieSlice}
 
 main(): Unit {
-    let pie = PieAxes([
-        PieSlice(42.0, label: "Chrome"),
-        PieSlice(31.0, label: "Safari"),
-        PieSlice(27.0, label: "Firefox")
-    ])
-    pie.innerRadius = 0.55    // 大于零：画成环形图
-    pie.donutLabel = "100"    // 环孔里标出总量
+    let pie = PieAxes(
+        [
+            PieSlice(42.0, label: "Chrome"),
+            PieSlice(31.0, label: "Safari"),
+            PieSlice(27.0, label: "Firefox")
+        ]
+    )
+    pie.innerRadius = 0.55 // 大于零：画成环形图
+    pie.donutLabel = "100" // 环孔里标出总量
     let figure = Figure("浏览器份额")
     figure.addPanel(pie)
     FigureExport.renderToPng(figure, "pie.png", width: 800, height: 600)

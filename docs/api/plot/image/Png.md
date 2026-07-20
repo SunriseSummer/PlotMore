@@ -24,6 +24,7 @@ main(): Unit {
     let image = ImageBuffer(2, 2, Array<UInt8>(16, repeat: 255))
     let bytes = Png.encode(image)
     println("签名首字节=${bytes[0]}") // 输出: 签名首字节=137
+
     // 写出文件（示例在临时目录运行）；已存在的同名文件会被截断
     Png.write(image, "white_2x2.png")
 }

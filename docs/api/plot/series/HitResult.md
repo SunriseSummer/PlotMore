@@ -22,8 +22,8 @@ import plot.series.{HitResult, LineSeries}
 
 main(): Unit {
     let series = LineSeries([0.0, 1.0, 2.0], [12.0, 18.0, 15.0], label: "温度")
-    let projection = Projection(Rect(0.0, 0.0, 200.0, 100.0),
-        LinearScale(Bounds(0.0, 2.0)), LinearScale(Bounds(10.0, 20.0)))
+    let projection = Projection(Rect(0.0, 0.0, 200.0, 100.0), LinearScale(Bounds(0.0, 2.0)),
+        LinearScale(Bounds(10.0, 20.0)))
 
     // 悬停层把光标像素交给系列，并消费它返回的最近数据点。
     let pointer = projection.pixel(1.0, 18.0)

@@ -25,12 +25,12 @@ import plot.core.{Bounds, LinearScale}
 
 main(): Unit {
     let scale = LinearScale(Bounds(-20.0, 60.0))
-    println(scale.normalize(20.0))      // 输出: 0.500000
-    println(scale.denormalize(1.0))     // 输出: 60.000000
+    println(scale.normalize(20.0)) // 输出: 0.500000
+    println(scale.denormalize(1.0)) // 输出: 60.000000
 
     // 自动适配所用的圆整：区间向外扩展到整刻度
     let survey = LinearScale(Bounds(3.7, 91.2))
-    println(survey.niceDomain())        // 输出: Bounds(0.000000, 100.000000)
+    println(survey.niceDomain()) // 输出: Bounds(0.000000, 100.000000)
 
     // 次刻度：每个主刻度间隔再分 5 份
     survey.setMinorDivisions(5)
@@ -40,7 +40,7 @@ main(): Unit {
             minors += 1
         }
     }
-    println(minors)                     // 输出: 18
+    println(minors) // 输出: 18
 }
 ```
 

@@ -23,6 +23,7 @@ main(): Unit {
     let summary: BoxStats = Stats.box([1.0, 2.0, 3.0, 4.0, 5.0, 100.0])
     println(summary.median) // 输出: 3.500000
     println(summary.iqr()) // 输出: 2.500000
+
     // 须落在围栏内最远的真实观测上；100.0 越过围栏，成为离群点
     println(summary.upperWhisker) // 输出: 5.000000
     println(summary.outliers[0]) // 输出: 100.000000

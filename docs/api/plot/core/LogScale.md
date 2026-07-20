@@ -18,7 +18,7 @@ public class LogScale <: Scale
 
 ## 说明
 
-接受原始区间的方法（[`niceBounds`](#nicebounds)、[`padBounds`](#padbounds)、[`zoomAround`](#zoomaround)、[`panByFraction`](#panbyfraction)）先把区间钳制为正：下界不大于零而上界为正时，下界提升为上界的 `1e-6` 倍（最大值之下六个十倍程——系列绘制时本就跳过非正点，而自动适配报告的是原始数据范围，无从知道它会落在对数轴上）；整个区间都不为正时抛出 [`PlotException`](PlotException.md)。
+接受原始区间的方法（[`niceBounds`](#nicebounds)、[`padBounds`](#padbounds)、[`zoomAround`](#zoomaround)、[`panByFraction`](#panbyfraction)）先把区间限制在正值范围：下界不大于零而上界为正时，下界提升为上界的 `1e-6` 倍（最大值之下六个十倍程——系列绘制时本就跳过非正点，而自动适配报告的是原始数据范围，无从知道它会落在对数轴上）；整个区间都不为正时抛出 [`PlotException`](PlotException.md)。
 
 ## 示例
 
@@ -29,19 +29,19 @@ import plot.core.{Bounds, LogScale, PlotException}
 
 main(): Unit {
     let scale = LogScale(Bounds(1.0, 1000.0))
-    println(scale.accepts(0.0))        // 输出: false
-    println(scale.niceDomain())        // 输出: Bounds(1.000000, 1000.000000)
+    println(scale.accepts(0.0)) // 输出: false
+    println(scale.niceDomain()) // 输出: Bounds(1.000000, 1000.000000)
 
     // 每个十倍程内的 2…9 次刻度默认开启
-    println(scale.ticks().size)        // 输出: 28
+    println(scale.ticks().size) // 输出: 28
     scale.setMinorTicks(false)
-    println(scale.ticks().size)        // 输出: 4
+    println(scale.ticks().size) // 输出: 4
 
     // 非正定义域在对数轴上无法表达，直接被拒绝
     try {
         scale.setDomain(Bounds(0.0, 100.0))
     } catch (_: PlotException) {
-        println("已拒绝非正定义域")     // 输出: 已拒绝非正定义域
+        println("已拒绝非正定义域") // 输出: 已拒绝非正定义域
     }
 }
 ```

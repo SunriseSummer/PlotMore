@@ -15,7 +15,7 @@ import plot.axes.{Axes, PieAxes, RadarAxes}
 | 类型 | 说明 |
 |---|---|
 | [`Panel`](Panel.md) | 图形网格中一块自成一体的绘图区域——所有面板类型的抽象基类。 |
-| [`Axes`](Axes.md) | 笛卡尔绘图面板：两条标度、一叠按序绘制的系列，加上网格线、刻度、标注与图例。 |
+| [`Axes`](Axes.md) | 笛卡尔绘图面板：两条标度、多条按顺序绘制的系列，以及网格线、刻度、标注和图例。 |
 | [`Annotation`](Annotation.md) | 绘制在数据之上的记号的抽象基类——阈值线、高亮区间、数据点旁的文字。 |
 | [`HorizontalLine`](HorizontalLine.md) | 固定 y 值处的水平参考线——上限、均值或目标。 |
 | [`VerticalLine`](VerticalLine.md) | 固定 x 值处的竖直参考线——事件时刻或边界。 |

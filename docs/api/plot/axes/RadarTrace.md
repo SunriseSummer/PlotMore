@@ -23,8 +23,8 @@ import plot.canvas.MarkerStyle
 
 main(): Unit {
     let trace = RadarTrace([80.0, 60.0, 90.0], label: "车型 A")
-    trace.fillOpacity = 0.35              // 加深多边形填充
-    trace.marker = MarkerStyle.Diamond    // 顶点改用菱形标记
+    trace.fillOpacity = 0.35 // 加深多边形填充
+    trace.marker = MarkerStyle.Diamond // 顶点改用菱形标记
     let radar = RadarAxes(["速度", "功率", "续航"])
     radar.add(trace)
     let figure = Figure("车型对比")

@@ -4,7 +4,7 @@
 
 `plot.axes` 中的 public class
 
-笛卡尔绘图面板：两条标度、一叠按序绘制的系列，加上网格线、刻度、标注与图例。每条轴的绘制范围按「视图 → 固定范围 → 自动适配」的优先级解析。作为面板挂进 [Figure](../Figure.md) 的网格，通常经 [Figure.addAxes](../Figure.md#addaxes) 创建。
+笛卡尔绘图面板：两条标度、多条按顺序绘制的系列，以及网格线、刻度、标注和图例。每条轴的绘制范围按「视图 → 固定范围 → 自动适配」的优先级解析。作为面板放进 [Figure](../Figure.md) 的网格，通常经 [Figure.addAxes](../Figure.md#addaxes) 创建。
 
 ## 声明
 

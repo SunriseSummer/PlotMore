@@ -31,7 +31,7 @@ main(): Unit {
     let load = [0.32, 0.28, 0.55, 0.74, 0.68, 0.41]
     let series = LineSeries(hours, load, label: "CPU 负载")
     series.marker = MarkerStyle.Circle
-    series.fillTo = Some(0.0)   // 面积图形态：填充到基线 0
+    series.fillTo = Some(0.0) // 面积图形态：填充到基线 0
     series.fillOpacity = 0.25
 
     let (figure, axes) = Figure.single(title: "CPU 负载")

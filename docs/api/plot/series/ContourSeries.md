@@ -35,7 +35,7 @@ main(): Unit {
     let xr = Bounds(-1.0, 1.0)
     let yr = Bounds(-1.0, 1.0)
     // f 是最后一个形参，可用尾随 lambda 形式；这里是同心圆场
-    let rings = ContourSeries.fromFunction(60, 60, xr, yr) { x, y => x * x + y * y }
+    let rings = ContourSeries.fromFunction(60, 60, xr, yr) {x, y => x * x + y * y}
     rings.setLevels([0.25, 0.5, 0.75])
 
     let (figure, axes) = Figure.single(title: "等值线")

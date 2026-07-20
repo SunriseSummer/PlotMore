@@ -1,72 +1,64 @@
-[plot 指南](../index.md) › 图例与标注
-
-# 给图形补充图例、阈值和说明
+# 添加阈值、区间和说明
 
 ## 目标
 
-让读者不查看代码也能识别系列、单位、业务阈值和关键事件。你会先用标题与标签说明“看什么”，再用图例区分数据层，最后只为真正需要解释的位置添加参考线、区间或文字说明。
+向进阶仪表板的趋势面板添加业务阈值线和事件区间，使读者知道何时越过上限、哪个时间段受发布影响。标注使用数据坐标，会随面板缩放和平移，但不会可靠地替你扩大自动范围。
+
+![标注画廊结果；用于核对阈值线、区间底色和文字说明的层次](../../../examples/gallery/annotations.png)
+
+画廊文件来自 `examples/src/composite.cj`，SHA-256 为 `c30b0b060bf3375aa17a6ab65208d0d969b195a675dba03717223231cabb3bd0`。
 
 ## 适用场景
 
-用于两条以上系列、带 SLO/目标值的监控图、需要标出部署时间或异常区间的报告。若画面本身选择错误，标注不能补救；先完成[选择图表](choose-chart.md)。本页的代码补丁直接建立在[多面板分析报告](../tutorials/analysis-report.md)上。
+适用于 SLO、目标线、发布窗口、异常区间和少量关键说明。若只是想给每个点贴值，优先考虑系列的值标签或悬停读数；大量文字会遮挡数据。此补丁建立在[进阶仪表板](../tutorials/advanced-dashboard.md)的 `buildDashboard` 上。
 
 ## 准备工作
 
-列出读者必须知道的上下文：指标名称和单位、系列身份、阈值来源、事件时间、异常结论。删除“有也可以、没有也不影响理解”的装饰。标注越多，越可能遮挡数据；优先使用标题、轴标签和清楚的系列 `label`。保留基页的完整 `main`、两个面板和窗口；以下片段只修改名为 `trend` 的左侧趋势面板。
+先确认标注数值与面板使用相同单位：趋势面板横轴是日，纵轴是访问量。确定阈值 600、活动区间第 3 至第 4 天，并检查当前数据范围能看到阈值。下面新增导入并插入到 `trend.add(...)` 之后。
 
 ## 操作步骤
 
-### 1. 完成标题和单位
-
-总标题说明报告主题，面板标题说明局部问题，`xLabel`/`yLabel` 写变量与单位。不要把所有信息塞进图例，也不要只写“数据”“数值”这类无业务含义的标签。
-
-### 2. 为需要区分的系列命名
-
-构造系列时提供稳定、简短的 `label`。图例从标签生成；多条线还可以配合不同线型或标记，避免颜色成为唯一通道。调整图例位置时检查是否挡住峰值或关键区间。
-
-### 3. 用数据坐标添加阈值
-
-在多面板基页的导入区增加 `import plot.axes.HorizontalLine`，再把下面补丁插在 `trend.add(LineSeries(...))` 之后、创建 `channel` 面板之前：
+阈值线提供名称，区间使用较低透明度，避免压住折线。`annotate` 的返回值可忽略，但仍显式接收，便于仓颉代码保持清楚。
 
 ```cangjie role=patch
-let slo = HorizontalLine(150.0)
-slo.label = "周目标 150 件"
-let _ = trend.annotate(slo)
+import plot.axes.{HorizontalLine, VerticalSpan}
+import plot.core.Colors
+
+let capacity = HorizontalLine(600.0)
+capacity.label = "容量关注线 600"
+capacity.color = Some(Colors.hex("#DC2626"))
+let _ = trend.annotate(capacity)
+
+let campaign = VerticalSpan(3.0, 4.0)
+campaign.color = Some(Colors.hex("#F59E0B"))
+campaign.opacity = 0.14
+let _ = trend.annotate(campaign)
 ```
 
-水平/垂直线适合单一阈值或事件时刻，区间带适合目标区或事件窗口，`TextNote` 适合少量需要明确结论的点。它们使用数据坐标，因此缩放和平移时仍跟随语义位置。
-
-需要强调达标区间时，先在同一导入区增加 `HorizontalSpan`，再用下面变化替换刚才的 `HorizontalLine` 三行。插入点保持不变，仍位于趋势系列之后、渠道面板之前：
+若需要指出一个具体异常点，可改为文字说明，并为文字设置像素偏移避免压住点。下面变化添加到散点 `quality` 面板，而不是继续给趋势面板堆标注。
 
 ```cangjie role=variation
-let targetBand = HorizontalSpan(150.0, 180.0)
-targetBand.opacity = 0.16
-let _ = trend.annotate(targetBand)
+import plot.axes.TextNote
+
+let note = TextNote(146.0, 2.1, "检查高负载实例")
+note.offsetX = 12.0
+note.offsetY = -8.0
+let _ = quality.annotate(note)
 ```
-
-### 4. 检查范围与遮挡
-
-标注通常不应替代数据范围。阈值远离数据时，显式调整范围或在说明中指出它不可见；不要误以为添加参考线必然扩大自动域。不同窗口尺寸下检查文字、图例和数据是否重叠。
 
 ## 确认结果
 
-隐藏代码，只看图回答：每条系列是什么、横纵轴单位是什么、阈值或事件代表什么、读者应注意哪个结论。切换窗口大小和缩放视图，确认数据坐标标注仍位于正确值。若必须依赖颜色名称解释，增加标签、线型或标记。
+运行仪表板后，趋势面板应看到横向红色阈值线及其标签，第 3 到第 4 天之间有半透明竖向区间，折线仍可读。缩放趋势面板，标注应跟随数据坐标。若添加文字变化，说明应锚定在散点附近，移动视图后仍指向同一数据位置。若阈值在画面外，显式调整 y 限制，而不是改阈值数值迎合画面。
 
 ## 常见错误
 
-- 每个点都加文字，导致读者看不到数据形状。
-- 图例标签写成类型名或变量名，而不是业务身份。
-- 同一事件同时用区间、竖线和文字重复说明，标签互相覆盖。
-- 参考线位于自动范围外，却误判为绘制失败。
-- 深色主题下自定义颜色对比不足。
+把像素坐标当数据坐标会让标注落在意外位置；透明度过高会遮住数据；同时给区间、边界线和文字都加长标签会互相重叠。标注通常不参与自动范围，远离系列的阈值可能不可见。另一个错误是用标注代替数据：关键事件来源仍应保存在业务数据或报告说明中。
 
 ## 相关 API
 
-- [`Legend`](../../api/plot/axes/Legend.md) — 图例位置和布局。
-- [`Annotation`](../../api/plot/axes/Annotation.md) — 参考线、区间和文字说明的共同抽象。
-- [`Axes`](../../api/plot/axes/Axes.md) — 标题、标签、图例和标注所属面板。
-- [`Theme`](../../api/plot/core/Theme.md) — 整体配色和视觉默认值。
+- [`Annotation`](../../api/plot/axes/Annotation.md)：所有普通坐标标注的共同接口。
+- [`TextNote`](../../api/plot/axes/TextNote.md)：在数据位置附近放置文字说明。
 
 ## 下一步
 
-将带上下文的图交付为文件，继续[导出 PNG](export-image.md)。若标注不见、图例遮挡或主题启动失败，到[常见绘图问题](../troubleshooting/common-problems.md)按现象排查。
+完成标注后，继续[导出可交付 PNG](export-image.md)，在最终尺寸中检查说明是否仍可读。

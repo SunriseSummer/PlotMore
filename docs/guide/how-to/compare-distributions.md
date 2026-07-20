@@ -1,118 +1,96 @@
-[plot 指南](../index.md) › 比较分布
-
-# 比较直方图、箱线图和小提琴图
+# 比较两组分布
 
 ## 目标
 
-根据样本量和分析问题，在直方图、箱线图与小提琴图之间做出可解释选择，并避免把分箱或平滑参数造成的形状当成数据事实。最终图应让读者看出频数形状、稳健摘要或密度轮廓中的一种主要信息。
+用两张采用相同范围和分箱数的直方图，再配一张箱线图和一张小提琴图，比较“基线”与“优化后”两组延迟。这样每种视图都实际覆盖两组数据，避免只画一组直方图却声称完成组间比较。
+
+![直方图画廊结果](../../../examples/gallery/histogram.png)
+
+![箱线图画廊结果](../../../examples/gallery/boxplot.png)
+
+![小提琴图画廊结果](../../../examples/gallery/violin.png)
+
+三张画廊图均来自 `examples/src/distribution.cj`，SHA-256 依次为 `6fdb5443b0b1867e011b293a17ca89f1c57795ee50a0dce9d896584f802bb05a`、`a9890c3fb3fe4fb897b6d581f1d0e9a6915da18106d2fb32e01d173712b31395`、`826667a6332f47e518764a7dbcd54cd822875b743fb0dd239c14b47501246a0c`。
 
 ## 适用场景
 
-用于延迟、价格、测量误差等一组或多组连续样本。若只有每月一个汇总值，你没有可展示的分布，应使用趋势或类别比较；若要观察两个变量关系，使用散点图。
+当每组都有一批原始样本，需要比较中心、散布、异常值和形状时使用。样本极少时优先显示原始点；只有均值与误差时使用[误差和置信带](show-uncertainty.md)。
 
 ## 准备工作
 
-本页是独立操作指南，不继承第一张图或选择图表页。准备一个能依赖 `plot` 的 `demo` 消费者项目；项目布局与[第一张折线图](../getting-started/first-chart.md)相同。程序不打开可见窗口，而是直接导出 `distribution-comparison.png`，但 `FigureExport` 仍会创建隐藏 SDL 窗口：自动环境必须能加载 SDL3/SDL3_ttf，并支持隐藏渲染；纯无图形运行环境不保证可用。
-
-保留原始样本数组，记录单位、缺失值处理和组别。样本太少时，平滑密度会暗示不存在的细节；极端值很多时，先确认它们是有效观测还是数据错误。读者需要知道每组样本代表相同口径。本例故意使用固定数组而不是随机生成器，使分箱、箱体和小提琴的变化都来自参数，而不是每次运行的新样本。
+两组必须使用同一单位。比较直方图时固定共同 `Bounds` 与相同 bins；否则每张图自动选择不同区间，柱高不能直接比较。下面固定小样本是为了可复现，真实分析应保留更大样本并说明抽样过程。
 
 ## 操作步骤
 
-### 1. 需要看频数形状时选直方图
-
-`HistogramSeries` 把样本分进等宽区间。`Count` 适合回答每个区间有多少观测；`Frequency` 让柱高总和为 1；`Density` 让总面积为 1，适合与概率密度比较。分箱数量会改变细节：先用中等数量，再用相邻设置检查结论是否稳定。
-
-下面的完整程序把同一批两组样本放进三个独立面板：直方图回答“基线样本集中在哪些区间”，箱线图比较摘要，小提琴图展示平滑轮廓。三个面板共享报告标题，但不共用不相容的横轴语义。
-
-### 2. 需要紧凑比较多组时选箱线图
-
-`BoxPlotSeries` 用中位数、四分位范围和须概括样本，适合在有限空间比较多个组。它不展示完整形状；两个不同分布可能有相似箱体，因此发现异常后应回到原始点或分布图。
-
-### 3. 需要看形状与多峰时选小提琴图
-
-`ViolinSeries` 用核密度展示轮廓，能暴露偏斜或多峰。带宽和平滑会影响轮廓，样本很少时不要把光滑曲线当精确事实。最好同时标明样本量或配合箱线摘要。
-
-### 4. 用同一口径比较
-
-多组分布应使用相同单位、过滤规则和可比范围。将图放在同一面板或一致尺度的面板中，再通过标签说明组别；不要让每组自动范围制造视觉上同样宽的假象。
-
-## 完整程序
-
-把以下内容保存为 `src/main.cj`。程序使用公开 API 构建三面板报告，并同步导出文件；不依赖仓库内部的 `examples.Data` 辅助函数。
+程序构建 2×2 网格。前两格各画一组直方图，但范围和分箱规则一致；第三格用共同类别轴的 BoxPlotSeries；第四格用 ViolinSeries。四格一起回答“中心是否降低、波动是否收窄、形状是否改变”。
 
 ```cangjie verify role=complete
-package demo
+package guide_examples
 
 import plot.{Figure, FigureExport}
-import plot.core.CategoryScale
-import plot.series.{BoxPlotSeries, HistogramNorm, HistogramSeries, ViolinSeries}
+import plot.core.{Bounds, CategoryScale}
+import plot.series.{BoxPlotSeries, HistogramSeries, ViolinSeries}
 
 main(): Unit {
-    let baseline = [118.0, 121.0, 123.0, 126.0, 129.0, 131.0, 134.0, 138.0, 143.0, 151.0, 164.0, 188.0]
-    let optimized = [72.0, 76.0, 79.0, 81.0, 84.0, 86.0, 88.0, 91.0, 95.0, 101.0, 108.0, 119.0]
-    let groups = [baseline, optimized]
+    let baseline = [78.0, 82.0, 85.0, 88.0, 91.0, 94.0, 96.0, 101.0, 105.0, 112.0, 126.0, 148.0]
+    let optimized = [61.0, 64.0, 66.0, 68.0, 70.0, 71.0, 73.0, 75.0, 77.0, 80.0, 84.0, 91.0]
+    let range = Bounds(55.0, 155.0)
+    let figure = Figure("部署前后延迟分布")
+    figure.setGrid(2, 2)
 
-    let figure = Figure("响应时间分布比较")
-    figure.subtitle = "同一口径的直方图、箱线摘要与密度轮廓"
-    figure.setGrid(1, 3)
+    let before = figure.addAxes()
+    before.title = "基线直方图"
+    let beforeHist = HistogramSeries(baseline, bins: 8)
+    beforeHist.setRange(range)
+    before.add(beforeHist)
 
-    let histogramAxes = figure.addAxes()
-    histogramAxes.title = "基线频数"
-    histogramAxes.xLabel = "响应时间（ms）"
-    histogramAxes.yLabel = "观测数"
-    let histogram = HistogramSeries(baseline, bins: 6, label: "基线")
-    histogram.norm = HistogramNorm.Count
-    histogramAxes.add(histogram)
+    let after = figure.addAxes()
+    after.title = "优化后直方图"
+    let afterHist = HistogramSeries(optimized, bins: 8)
+    afterHist.setRange(range)
+    after.add(afterHist)
 
-    let boxAxes = figure.addAxes()
-    boxAxes.title = "分位数摘要"
-    boxAxes.xLabel = "版本"
-    boxAxes.yLabel = "响应时间（ms）"
-    boxAxes.setXScale(CategoryScale(["基线", "优化后"]))
-    let boxes = BoxPlotSeries(groups, label: "响应时间")
-    boxes.showMean = true
-    boxAxes.add(boxes)
+    let boxes = figure.addAxes()
+    boxes.title = "箱线摘要"
+    boxes.setXScale(CategoryScale(["基线", "优化后"]))
+    boxes.add(BoxPlotSeries([baseline, optimized]))
 
-    let violinAxes = figure.addAxes()
-    violinAxes.title = "密度轮廓"
-    violinAxes.xLabel = "版本"
-    violinAxes.yLabel = "响应时间（ms）"
-    violinAxes.setXScale(CategoryScale(["基线", "优化后"]))
-    let violins = ViolinSeries(groups, label: "响应时间")
-    violins.showBox = true
-    violinAxes.add(violins)
+    let violins = figure.addAxes()
+    violins.title = "密度形状"
+    violins.setXScale(CategoryScale(["基线", "优化后"]))
+    violins.add(ViolinSeries([baseline, optimized]))
 
-    FigureExport.renderToPng(figure, "distribution-comparison.png", width: 900, height: 360)
-    println("已写入 distribution-comparison.png")
+    FigureExport.renderToPng(figure, "distributions.png", width: 1100, height: 820)
+    println("已写入 distributions.png") // 输出: 已写入 distributions.png
 }
 ```
 
-要比较“每个区间的占比”而不是原始观测数，只替换完整程序中 `histogram.norm` 的赋值，并同步更改纵轴标题。这个变化不影响箱线图和小提琴图：
+下面变化用于敏感性检查：改变分箱数与小提琴带宽后重新导出。如果“优化后更集中”的结论只在某个参数下出现，就不应把它写成稳定结论。
 
 ```cangjie role=variation
-histogramAxes.yLabel = "频率"
-histogram.norm = HistogramNorm.Frequency
+let detailed = HistogramSeries(optimized, bins: 12, label: "12 个分箱")
+detailed.setRange(Bounds(55.0, 155.0))
+axes.add(detailed)
+let smooth = ViolinSeries([baseline, optimized])
+smooth.bandwidth = Some(7.5)
+smooth.showBox = true
+otherAxes.add(smooth)
 ```
 
 ## 确认结果
 
-在项目目录运行 `cjpm run`，终端应打印“已写入 distribution-comparison.png”，当前目录出现非空 PNG。打开文件后应看到一行三列：左侧六个区间的基线直方图，中间两个箱体，右侧两把小提琴；后两面板的“基线/优化后”标签顺序相同。再用一个已知的小样本手工核对最小值、中位数和最大值，并观察结论是否在相邻分箱/带宽设置下保持。若读者无法知道柱高是计数、频率还是密度，补充轴标签。
+文件应存在且可打开。两个直方图的横轴范围相同；优化后样本整体更靠左、跨度更窄。箱线图显示两组中位数与四分位范围，小提琴图显示各自形状。尝试 bins 为 6、8、12，以及不同合理 bandwidth，确认主要结论不因一个任意参数消失。
 
 ## 常见错误
 
-- 把频率与密度都解释为“百分比”，忽略区间宽度。
-- 只凭一个分箱数量判断双峰或异常峰。
-- 用小提琴图显示十几个样本，平滑轮廓比数据本身更强。
-- 用箱线图推断完整分布形状。
-- 多组样本过滤规则不同，却放在一起比较。
+给每组直方图不同范围、把 Count 与 Density 叠在同一纵轴、用光滑小提琴掩盖极小样本，都会造成误读。`Count` 回答每个区间有多少样本；`Frequency` 让柱高之和为 1；`Density` 让总面积为 1。箱线图压缩了多峰结构，小提琴图又受带宽影响，因此两者适合互相补充。
 
 ## 相关 API
 
-- [`HistogramSeries`](../../api/plot/series/HistogramSeries.md) — 样本分箱及归一化方式。
-- [`BoxPlotSeries`](../../api/plot/series/BoxPlotSeries.md) — 分位数摘要和异常值表达。
-- [`ViolinSeries`](../../api/plot/series/ViolinSeries.md) — 核密度轮廓。
-- [`Axes`](../../api/plot/axes/Axes.md) — 多组系列的共享坐标语境。
+- [`HistogramSeries`](../../api/plot/series/HistogramSeries.md)：固定范围与分箱统计。
+- [`BoxPlotSeries`](../../api/plot/series/BoxPlotSeries.md)：比较中位数、四分位和异常点。
+- [`ViolinSeries`](../../api/plot/series/ViolinSeries.md)：比较经平滑后的分布形状。
 
 ## 下一步
 
-先在[选择图表](choose-chart.md)中检查分布图是否真的回答业务问题，再用[配置坐标](configure-axes.md)固定多组比较所需的共同尺度。需要交付报告时继续[导出 PNG](export-image.md)。
+继续阅读[二维场与色图](../concepts/field-data-and-colormaps.md)，把一维样本比较扩展到位置网格上的连续值。

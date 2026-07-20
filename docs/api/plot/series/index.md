@@ -17,7 +17,7 @@ import plot.series.{LineSeries, ScatterSeries, BarSeries}
 | [`Series`](Series.md) | [Axes](../axes/Axes.md) 中一条可绘制的数据层：报告自身占据的数据区间、经由投影绘制、贡献图例条目，并可选地响应命中测试。 |
 | [`LineSeries`](LineSeries.md) | 经过一组 `(x, y)` 数据点的折线，可选带标记，也可选填充到基线。 |
 | [`ScatterSeries`](ScatterSeries.md) | 位于 `(x, y)` 的散点，可再把额外维度映射到标记大小与颜色。 |
-| [`StepSeries`](StepSeries.md) | 分段常值的折线，忠实呈现在采样点之间保持数值而非滑动过渡的量：计数器、离散状态、区间内固定的速率。 |
+| [`StepSeries`](StepSeries.md) | 分段常值的折线，用来表示在采样点之间保持不变、不会平滑过渡的量，例如计数器、离散状态和区间内固定的速率。 |
 | [`StemSeries`](StemSeries.md) | 从基线竖直伸到每个数据点、顶端带标记的茎干图——折线的离散信号对应物：样本本身是数据，样本之间的空隙不是。 |
 | [`BarSeries`](BarSeries.md) | 在整数类别位置绘制条形的系列，条宽跟随类别轴的类别带而非以像素估计。 |
 | [`BarGroup`](BarGroup.md) | 把共享一条类别轴的多个条形系列安排成并排分组或堆叠布局的工具。 |

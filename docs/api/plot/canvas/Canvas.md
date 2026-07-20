@@ -4,7 +4,7 @@
 
 `plot.canvas` 中的 public class
 
-所有图表类型赖以渲染的绘制词汇——填充、折线、标记、扇形与文本——架设在 `Renderer` 之上。条带类填充会缓存填充色纹理，Canvas 因此拥有 GPU 资源，用毕必须关闭；在无渲染设备（headless）的渲染器上，一切绘制入口都是空操作。
+Canvas 在 `Renderer` 之上提供图表需要的填充、折线、标记、扇形和文本绘制方法。条带类填充会缓存填充色纹理，Canvas 因此拥有 GPU 资源，用毕必须关闭；在无渲染设备（headless）的渲染器上，一切绘制入口都是空操作。
 
 ## 声明
 
@@ -25,6 +25,10 @@ public class Canvas <: Resource
 **资源所有权。** Canvas 拥有缓存的纹理，必须调用 `close` 释放（幂等）。[PlotWindow](../PlotWindow.md) 会代为关闭；仅当自行驱动渲染循环时才直接构造 Canvas。
 
 **headless 行为。** 在 `Renderer.headless()` 上，所有绘制入口都是空操作，布局、测量与事件处理无需窗口即可运行——这正是本库自身测试的方式。渲染器的原语在无设备时本就静默跳过，但填充要先构建纹理，而 `textureFromSurface` 在空设备上会抛出异常而非跳过，因此各填充方法在参数校验之后、构建纹理之前提前返回：`fillBand`/`fillBandGradient` 对不等长边界的 `PlotException` 在 headless 下依然抛出。
+
+**异常**
+
+- `CuiException` — 在真实渲染设备上，Canvas 直接委托给 `sdl.Renderer` 的绘制、纹理、文本或裁剪调用如果被 SDL 拒绝，会把渲染器给出的异常原样交给调用方；headless 绘制会在进入这些原生调用前返回。
 
 ## 示例
 

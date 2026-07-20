@@ -30,15 +30,15 @@ import plot.core.{Bounds, LinearScale, Scale}
 main(): Unit {
     // 以 Scale 类型的变量驱动一条线性标度
     let scale: Scale = LinearScale(Bounds(0.0, 100.0))
-    println(scale.normalize(50.0))      // 输出: 0.500000
-    println(scale.denormalize(0.25))    // 输出: 25.000000
-    println(scale.ticks().size)         // 输出: 6
+    println(scale.normalize(50.0)) // 输出: 0.500000
+    println(scale.denormalize(0.25)) // 输出: 25.000000
+    println(scale.ticks().size) // 输出: 6
 
     // 缩放与平移只计算新的区间，标度本身不变
     let view = scale.domain()
-    println(scale.zoomAround(view, 25.0, 0.5))   // 输出: Bounds(12.500000, 62.500000)
-    println(scale.panByFraction(view, -0.1))     // 输出: Bounds(-10.000000, 90.000000)
-    println(scale.domain())                      // 输出: Bounds(0.000000, 100.000000)
+    println(scale.zoomAround(view, 25.0, 0.5)) // 输出: Bounds(12.500000, 62.500000)
+    println(scale.panByFraction(view, -0.1)) // 输出: Bounds(-10.000000, 90.000000)
+    println(scale.domain()) // 输出: Bounds(0.000000, 100.000000)
 }
 ```
 

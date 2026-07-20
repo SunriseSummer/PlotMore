@@ -22,8 +22,8 @@ import plot.core.Tick
 main(): Unit {
     let major = Tick(20.0, "20")
     let minor = Tick(24.0, "", major: false)
-    println("${major.label} 主刻度=${major.major}")   // 输出: 20 主刻度=true
-    println("${minor.value} 主刻度=${minor.major}")   // 输出: 24.000000 主刻度=false
+    println("${major.label} 主刻度=${major.major}") // 输出: 20 主刻度=true
+    println("${minor.value} 主刻度=${minor.major}") // 输出: 24.000000 主刻度=false
 }
 ```
 

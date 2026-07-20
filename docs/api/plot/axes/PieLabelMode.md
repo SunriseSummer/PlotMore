@@ -21,11 +21,13 @@ import plot.{Figure, FigureExport}
 import plot.axes.{PieAxes, PieSlice, PieLabelMode}
 
 main(): Unit {
-    let pie = PieAxes([
-        PieSlice(3.0, label: "赞成"),
-        PieSlice(1.0, label: "反对")
-    ])
-    pie.labelMode = PieLabelMode.Percent    // 切片上只标百分比
+    let pie = PieAxes(
+        [
+            PieSlice(3.0, label: "赞成"),
+            PieSlice(1.0, label: "反对")
+        ]
+    )
+    pie.labelMode = PieLabelMode.Percent // 切片上只标百分比
     let figure = Figure("投票结果")
     figure.addPanel(pie)
     FigureExport.renderToPng(figure, "pie-percent.png", width: 640, height: 480)

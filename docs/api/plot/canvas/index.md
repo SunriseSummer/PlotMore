@@ -14,7 +14,7 @@ import plot.canvas.{Canvas, LineStyle, MarkerStyle}
 
 | 类型 | 说明 |
 |---|---|
-| [`Canvas`](Canvas.md) | 所有图表类型赖以渲染的绘制词汇——填充、折线、标记、扇形与文本——架设在 `Renderer` 之上。 |
+| [`Canvas`](Canvas.md) | Canvas 在 `Renderer` 之上提供图表需要的填充、折线、标记、扇形和文本绘制方法。 |
 
 **枚举**
 

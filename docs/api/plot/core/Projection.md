@@ -29,14 +29,14 @@ main(): Unit {
     let projection = Projection(area, LinearScale(Bounds(0.0, 10.0)), LinearScale(Bounds(0.0, 20.0)))
 
     // 数据 → 像素；y 轴已翻转：数据越大，屏幕位置越高
-    println(Int64(projection.pixelX(5.0)))      // 输出: 300
-    println(Int64(projection.pixelY(20.0)))     // 输出: 50
+    println(Int64(projection.pixelX(5.0))) // 输出: 300
+    println(Int64(projection.pixelY(20.0))) // 输出: 50
 
     // 像素 → 数据：命中测试与读数所用的逆变换
-    println(projection.dataX(300.0))            // 输出: 5.000000
+    println(projection.dataX(300.0)) // 输出: 5.000000
 
     // 数据距离 → 像素长度
-    println(Int64(projection.pixelWidth(1.0)))  // 输出: 40
+    println(Int64(projection.pixelWidth(1.0))) // 输出: 40
 }
 ```
 

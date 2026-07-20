@@ -26,7 +26,7 @@ main(): Unit {
     let (figure, axes) = Figure.single(title: "温度场")
     axes.add(HeatmapSeries([12.0, 18.0, 25.0, 40.0], rows: 2, columns: 2))
     let colorBar = ColorBar(Bounds(0.0, 40.0), Colormap.magma())
-    colorBar.side = ColorBarSide.Bottom    // 水平条带，放到面板下方
+    colorBar.side = ColorBarSide.Bottom // 水平条带，放到面板下方
     axes.setColorBar(colorBar)
     FigureExport.renderToPng(figure, "colorbar-bottom.png", width: 800, height: 600)
     println(colorBar.valueRange()) // 输出: Bounds(0.000000, 40.000000)

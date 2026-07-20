@@ -21,15 +21,15 @@ import plot.core.Palette
 
 main(): Unit {
     let palette = Palette.modern()
-    println(palette.size())        // 输出: 10
+    println(palette.size()) // 输出: 10
 
     // 索引回绕：第 10 条系列重新用回第 0 色
     let first = palette.at(0)
     let wrapped = palette.at(10)
-    println(first.r == wrapped.r && first.g == wrapped.g)   // 输出: true
+    println(first.r == wrapped.r && first.g == wrapped.g) // 输出: true
 
     // 负索引向前回绕到末尾
-    println(palette.at(-1).b == palette.at(9).b)            // 输出: true
+    println(palette.at(-1).b == palette.at(9).b) // 输出: true
 }
 ```
 

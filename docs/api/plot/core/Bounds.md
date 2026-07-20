@@ -30,17 +30,17 @@ import plot.core.Bounds
 main(): Unit {
     // 覆盖所有有限值；NaN 与无穷被跳过，不会污染区间
     let covered = Bounds.cover([3.0, Float64.NaN, -2.0, 7.0]).getOrThrow()
-    println(covered)                    // 输出: Bounds(-2.000000, 7.000000)
-    println(covered.span())             // 输出: 9.000000
-    println(covered.contains(7.0))      // 输出: true
+    println(covered) // 输出: Bounds(-2.000000, 7.000000)
+    println(covered.span()) // 输出: 9.000000
+    println(covered.contains(7.0)) // 输出: true
 
     // 两侧各留 10% 余量，再与另一区间求并
     let padded = Bounds(0.0, 10.0).expanded(0.1)
-    println(padded)                     // 输出: Bounds(-1.000000, 11.000000)
-    println(padded.union(Bounds(-3.0, 1.0)))    // 输出: Bounds(-3.000000, 11.000000)
+    println(padded) // 输出: Bounds(-1.000000, 11.000000)
+    println(padded.union(Bounds(-3.0, 1.0))) // 输出: Bounds(-3.000000, 11.000000)
 
     // 单点区间在建立投影前需要先打开
-    println(Bounds(4.0, 4.0).nonDegenerate())   // 输出: Bounds(2.000000, 6.000000)
+    println(Bounds(4.0, 4.0).nonDegenerate()) // 输出: Bounds(2.000000, 6.000000)
 }
 ```
 

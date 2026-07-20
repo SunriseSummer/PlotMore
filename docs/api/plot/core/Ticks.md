@@ -25,16 +25,16 @@ import plot.core.{Bounds, Ticks}
 
 main(): Unit {
     // 原始间距向上圆整到 1/2/5 × 10 的幂
-    println(Ticks.niceStep(3.0))                       // 输出: 5.000000
-    println(Ticks.linearStep(Bounds(0.0, 10.0), 5))    // 输出: 2.000000
+    println(Ticks.niceStep(3.0)) // 输出: 5.000000
+    println(Ticks.linearStep(Bounds(0.0, 10.0), 5)) // 输出: 2.000000
 
     // 主刻度落在圆整位置
     let ticks = Ticks.linear(Bounds(0.0, 10.0), target: 5)
-    println(ticks.size)                                // 输出: 6
-    println("${ticks[0].label} 到 ${ticks[5].label}")  // 输出: 0 到 10
+    println(ticks.size) // 输出: 6
+    println("${ticks[0].label} 到 ${ticks[5].label}") // 输出: 0 到 10
 
     // 区间向外圆整到整步长
-    println(Ticks.nice(Bounds(3.7, 91.2), target: 5))  // 输出: Bounds(0.000000, 100.000000)
+    println(Ticks.nice(Bounds(3.7, 91.2), target: 5)) // 输出: Bounds(0.000000, 100.000000)
 }
 ```
 
