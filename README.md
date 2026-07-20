@@ -43,7 +43,7 @@ main() {
     axes.add(series)
 
     let window = PlotWindow(figure)
-    let _ = window.addStandardToolbar()   // 保存 / 缩放 / 平移 / 复位 / 网格 / 主题
+    window.addStandardToolbar()   // 保存 / 缩放 / 平移 / 复位 / 网格 / 主题
     window.show()
 }
 ```
