@@ -5,6 +5,14 @@
 
 泼墨的图表描述与渲染完全分离：`Figure` 建立图表数据模型，`PlotWindow` 作为绘图容器。`Figure` 不持有窗口和渲染器等资源，既可以在窗口中交互展示，也可以导出为图像内存数据或文件使用。
 
+![](./examples/gallery/dashboard.png)
+
+## 文档与示例
+
+- [入门指南](docs/guide/index.md)
+- [API 参考](docs/api/index.md)
+- [示例集合](examples/)：28 个典型图表绘制示例，快速参考复用。
+
 ## 开发环境
 
 - Cangjie SDK `1.0.5`
@@ -47,9 +55,3 @@ main() {
 ```cangjie
 FigureExport.renderToPng(figure, "figure.png", width: 1200, height: 800)
 ```
-
-## 文档与示例
-
-- [入门指南](docs/guide/index.md)
-- [API 参考](docs/api/index.md)
-- [示例集合](examples/)：28 个典型图表绘制示例，快速参考复用。
