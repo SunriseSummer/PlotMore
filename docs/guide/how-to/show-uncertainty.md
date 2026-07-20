@@ -6,7 +6,6 @@
 
 ![误差棒画廊结果；用于核对点、连线、上下误差与端帽](../../../examples/gallery/errorbar.png)
 
-画廊文件来自 `examples/src/scatter.cj`，SHA-256 为 `855ff1c25b2869f3e4e99dbda602b3cd2dae406c23743a8b6bbce046a75410d8`。
 
 ## 适用场景
 

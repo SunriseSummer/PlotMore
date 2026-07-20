@@ -8,8 +8,6 @@
 
 ![堆叠柱画廊结果](../../../examples/gallery/bar-stacked.png)
 
-画廊文件分别来自 `examples/src/bar.cj`，SHA-256 为 `1f77985a16d134f9ed1b92741a5a758094dfb352dfdea0c74b6cdb372a89a51a` 和 `dc30d965be5f681ad605e8095d6e5e42fb29a4dc7fc10f688f16b1c1db6f74dc`。
-
 ## 适用场景
 
 当每个类别有多组同单位数值时使用。需要精确比较每组，选 grouped；关心总量和构成，选 stacked。若各组单位不同或正负含义复杂，应拆面板。类别很多且名称长时，可考虑水平柱。

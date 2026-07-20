@@ -12,8 +12,6 @@
 
 ![Plot 官方画廊中的主题与调色板对照；用于核对主题是一组整体默认值](../../../examples/gallery/themes.png)
 
-该画廊文件 SHA-256 为 `63e6c12e29b8d0da89ab398bbf05ef024169dcdf60b1c124484bff2979ce4f0a`，构建源为 `examples/src/composite.cj`。
-
 ## 工作模型
 
 Figure 持有 Theme，面板和系列在绘制时读取主题默认颜色、字体和间距。系列可以覆盖颜色、线型、标记和透明度。Legend 从可见系列生成条目，并可放在面板内或外侧。Annotation 使用数据坐标，因此缩放和平移时会跟随数据位置；它通常不参与自动范围。FigureExport 按给定逻辑宽高绘制整张 Figure，窗口工具栏不会进入图片。

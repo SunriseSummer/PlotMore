@@ -6,8 +6,6 @@
 
 ![标注画廊结果；用于核对阈值线、区间底色和文字说明的层次](../../../examples/gallery/annotations.png)
 
-画廊文件来自 `examples/src/composite.cj`，SHA-256 为 `c30b0b060bf3375aa17a6ab65208d0d969b195a675dba03717223231cabb3bd0`。
-
 ## 适用场景
 
 适用于 SLO、目标线、发布窗口、异常区间和少量关键说明。若只是想给每个点贴值，优先考虑系列的值标签或悬停读数；大量文字会遮挡数据。此补丁建立在[进阶仪表板](../tutorials/advanced-dashboard.md)的 `buildDashboard` 上。
