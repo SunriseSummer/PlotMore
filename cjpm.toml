@@ -1,0 +1,9 @@
+[package]
+cjc-version = "1.0.5"
+name = "plot"
+version = "0.1.0"
+output-type = "static"
+description = "Scientific plotting library for Cangjie, rendered through the sdl module."
+
+[dependencies]
+sdl = { git = "https://github.com/SunriseSummer/CangjieSDL.git" }
