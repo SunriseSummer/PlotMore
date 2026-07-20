@@ -5,9 +5,9 @@
 ## 运行
 
 ```shell
-cjpm run                          # 列出全部示例
-cjpm run --run-args="bubble"      # 查看气泡图示例
-cjpm run --run-args="interactive"           # 手工装配交互组件的完整演示
+cjpm run                            # 列出全部示例
+cjpm run --run-args="bubble"        # 查看气泡图示例
+cjpm run --run-args="interactive"   # 手工装配交互组件的完整演示
 ```
 
 每个窗口都带完整工具栏、悬停读数与光标状态条，因此任意示例都可以直接缩放、平移、保存。
