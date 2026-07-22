@@ -6,4 +6,4 @@ output-type = "executable"
 description = "Gallery of plot examples: one builder per chart type, viewable or exportable."
 
 [dependencies]
-plot = { path = "../plot" }
+plot = { path = ".." }
